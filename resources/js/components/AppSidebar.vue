@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, CalendarDays, Folder, Home, LayoutGrid } from 'lucide-vue-next';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -16,12 +16,24 @@ import {
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
+import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Properties',
+        href: PropertyController.index().url,
+        icon: Home,
+    },
+    {
+        title: 'Reservations',
+        href: ReservationController.index().url,
+        icon: CalendarDays,
     },
 ];
 
