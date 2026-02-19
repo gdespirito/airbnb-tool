@@ -53,7 +53,32 @@
       "mcp__laravel-boost__browser-logs",
       "Bash(gh pr merge:*)",
       "Bash(echo:*)",
-      "Skill(commit-commands:commit)"
+      "Skill(commit-commands:commit)",
+      "Bash(jq:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(jq -r '.tool_input.file_path // \"\"'); BASENAME=$(basename \"$FILE\"); if [[ \"$BASENAME\" == \".env\" || \"$BASENAME\" == \".env.local\" || \"$BASENAME\" == \".env.production\" || \"$BASENAME\" == \".env.testing\" ]]; then echo \"Blocked: $FILE contains secrets and must be edited manually.\" >&2; exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" == *.php ]]; then cd /Users/gonza/code/airbnb-tool && vendor/bin/pint \"$FILE\" --quiet 2>/dev/null; elif [[ \"$FILE\" =~ \\.(vue|ts|js)$ ]]; then cd /Users/gonza/code/airbnb-tool && npx eslint \"$FILE\" --fix --quiet 2>/dev/null; fi; exit 0"
+          }
+        ]
+      }
     ]
   },
   "enableAllProjectMcpServers": true,
