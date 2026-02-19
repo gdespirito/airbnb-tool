@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarDays, Folder, Home, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, CalendarDays, Folder, Home, LayoutGrid, Sparkles } from 'lucide-vue-next';
+import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskController';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
+import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -13,11 +16,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
-import { dashboard } from '@/routes';
-import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
-import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 
 const mainNavItems: NavItem[] = [
     {
@@ -34,6 +35,11 @@ const mainNavItems: NavItem[] = [
         title: 'Reservations',
         href: ReservationController.index().url,
         icon: CalendarDays,
+    },
+    {
+        title: 'Cleaning Tasks',
+        href: CleaningTaskController.index().url,
+        icon: Sparkles,
     },
 ];
 
