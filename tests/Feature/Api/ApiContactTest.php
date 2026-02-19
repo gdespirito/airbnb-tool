@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Contact;
+use App\Models\Property;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
@@ -21,6 +22,26 @@ describe('authenticated', function () {
 
         expect($response->json('data.0.name'))->toBe('Eliene')
             ->and($response->json('data.1.name'))->toBe('Viviana');
+    });
+
+    test('index filters by property_id', function () {
+        $contact = Contact::factory()->create(['name' => 'Ana']);
+        $other = Contact::factory()->create(['name' => 'Luis']);
+        $property = Property::factory()->create(['cleaning_contact_id' => $contact->id]);
+        Property::factory()->create(['cleaning_contact_id' => $other->id]);
+
+        $response = $this->getJson("/api/v1/contacts?property_id={$property->id}")->assertSuccessful();
+
+        expect($response->json('data'))->toHaveCount(1)
+            ->and($response->json('data.0.name'))->toBe('Ana');
+    });
+
+    test('index returns empty when property has no contacts', function () {
+        $property = Property::factory()->create(['cleaning_contact_id' => null]);
+
+        $this->getJson("/api/v1/contacts?property_id={$property->id}")
+            ->assertSuccessful()
+            ->assertJsonCount(0, 'data');
     });
 
     test('show returns a single contact', function () {
