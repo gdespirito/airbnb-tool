@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Api\CleaningTaskController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\HostexWebhookController;
 use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\ReservationController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('webhooks/hostex', HostexWebhookController::class);
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
     Route::get('properties', [PropertyController::class, 'index']);
