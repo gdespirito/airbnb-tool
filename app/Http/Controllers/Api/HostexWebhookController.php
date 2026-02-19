@@ -26,8 +26,12 @@ class HostexWebhookController extends Controller
         $data = $request->all();
         $event = $data['event'] ?? null;
 
-        if (in_array($event, ['reservation.created', 'reservation.updated', 'reservation.cancelled'])) {
-            ProcessHostexWebhook::dispatch($data['data'] ?? $data);
+        if (in_array($event, ['reservation_created', 'reservation_updated', 'reservation_cancelled'])) {
+            $reservationCode = $data['reservation_code'] ?? $data['stay_code'] ?? null;
+
+            if ($reservationCode) {
+                ProcessHostexWebhook::dispatch($reservationCode);
+            }
         }
 
         return response()->json(['ok' => true]);

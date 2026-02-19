@@ -27,7 +27,7 @@ class SyncHostexReservationsCommand extends Command
         $this->info('Fetching reservations from Hostex...');
 
         $reservations = $client->reservations([
-            'check_in_from' => now()->subDays(30)->toDateString(),
+            'start_check_in_date' => now()->subDays(30)->toDateString(),
         ]);
 
         $this->info('Found '.count($reservations).' reservations.');

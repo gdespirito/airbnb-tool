@@ -31,6 +31,18 @@ class HostexClient
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public function reservation(string $reservationCode): ?array
+    {
+        $results = $this->paginatedGet('/reservations', [
+            'reservation_code' => $reservationCode,
+        ]);
+
+        return $results[0] ?? null;
+    }
+
+    /**
      * @param  array<string, mixed>  $params
      * @return array<int, array<string, mixed>>
      */
