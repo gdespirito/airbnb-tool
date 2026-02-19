@@ -19,6 +19,23 @@ export type Property = {
     updated_at: string;
 };
 
+export type CleaningTask = {
+    id: number;
+    property_id: number;
+    reservation_id: number | null;
+    status: 'pending' | 'notified' | 'in_progress' | 'completed' | 'verified';
+    cleaning_type: 'checkout' | 'deep_clean' | 'touch_up';
+    cleaning_fee: number | null;
+    scheduled_date: string;
+    assigned_to: string | null;
+    assigned_phone: string | null;
+    notes: string | null;
+    property?: Property;
+    reservation?: Reservation;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Reservation = {
     id: number;
     property_id: number;

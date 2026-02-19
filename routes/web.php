@@ -17,3 +17,4 @@ Route::get('dashboard', function () {
 require __DIR__.'/settings.php';
 require __DIR__.'/properties.php';
 require __DIR__.'/reservations.php';
+require __DIR__.'/cleaning-tasks.php';
