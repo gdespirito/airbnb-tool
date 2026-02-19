@@ -27,7 +27,7 @@ class HostexClient
      */
     public function reservations(array $filters = []): array
     {
-        return $this->paginatedGet('/reservations', $filters);
+        return $this->paginatedGet('/reservations', $filters, 'data.reservations');
     }
 
     /**
@@ -37,7 +37,7 @@ class HostexClient
     {
         $results = $this->paginatedGet('/reservations', [
             'reservation_code' => $reservationCode,
-        ]);
+        ], 'data.reservations');
 
         return $results[0] ?? null;
     }
@@ -46,7 +46,7 @@ class HostexClient
      * @param  array<string, mixed>  $params
      * @return array<int, array<string, mixed>>
      */
-    private function paginatedGet(string $endpoint, array $params = []): array
+    private function paginatedGet(string $endpoint, array $params = [], string $dataKey = 'data'): array
     {
         $results = [];
         $offset = 0;
@@ -68,7 +68,7 @@ class HostexClient
                 break;
             }
 
-            $data = $response->json('data', []);
+            $data = $response->json($dataKey, []);
             $results = array_merge($results, $data);
             $offset += $limit;
         } while (count($data) === $limit);
