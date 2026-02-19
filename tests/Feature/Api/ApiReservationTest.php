@@ -55,6 +55,16 @@ test('index filters upcoming reservations', function () {
     expect($response->json('data'))->toHaveCount(1);
 });
 
+test('index accepts upcoming=true string', function () {
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->addDays(3),
+        'check_out' => now()->addDays(6),
+    ]);
+
+    $this->getJson('/api/v1/reservations?upcoming=true')->assertSuccessful();
+    $this->getJson('/api/v1/reservations?upcoming=false')->assertSuccessful();
+});
+
 test('index filters by check_in date range', function () {
     Reservation::factory()->for($this->property)->create([
         'check_in' => '2026-03-01',

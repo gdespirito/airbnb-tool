@@ -16,7 +16,7 @@ class CleaningTaskController extends Controller
         $request->validate([
             'property_id' => ['nullable', 'integer', 'exists:properties,id'],
             'status' => ['nullable', 'string'],
-            'upcoming' => ['nullable', 'boolean'],
+            'upcoming' => ['nullable', 'in:0,1,true,false'],
         ]);
 
         $query = CleaningTask::query()->with(['property', 'reservation', 'contact']);

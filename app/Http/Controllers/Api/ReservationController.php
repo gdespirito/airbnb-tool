@@ -20,7 +20,7 @@ class ReservationController extends Controller
             'status' => ['nullable', 'string'],
             'check_in_from' => ['nullable', 'date'],
             'check_in_to' => ['nullable', 'date', 'after_or_equal:check_in_from'],
-            'upcoming' => ['nullable', 'boolean'],
+            'upcoming' => ['nullable', 'in:0,1,true,false'],
         ]);
 
         $query = Reservation::query()->with('property');
