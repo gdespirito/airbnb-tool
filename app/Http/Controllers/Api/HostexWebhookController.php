@@ -6,11 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessHostexWebhook;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HostexWebhookController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
+        Log::info('Hostex webhook received', [
+            'headers' => $request->headers->all(),
+            'body' => $request->all(),
+        ]);
+
         $secret = config('hostex.webhook_secret');
 
         if ($secret && $request->header('Hostex-Webhook-Secret-Token') !== $secret) {
