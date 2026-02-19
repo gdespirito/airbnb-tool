@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreReservationRequest;
+use App\Http\Requests\Api\UpdateReservationRequest;
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class ReservationController extends Controller
 {
@@ -45,10 +48,33 @@ class ReservationController extends Controller
         return ReservationResource::collection($query->get());
     }
 
+    public function store(StoreReservationRequest $request): ReservationResource
+    {
+        $reservation = Reservation::create($request->validated());
+        $reservation->load('property');
+
+        return new ReservationResource($reservation);
+    }
+
     public function show(Reservation $reservation): ReservationResource
     {
         $reservation->load('property');
 
         return new ReservationResource($reservation);
+    }
+
+    public function update(UpdateReservationRequest $request, Reservation $reservation): ReservationResource
+    {
+        $reservation->update($request->validated());
+        $reservation->load('property');
+
+        return new ReservationResource($reservation);
+    }
+
+    public function destroy(Reservation $reservation): Response
+    {
+        $reservation->delete();
+
+        return response()->noContent();
     }
 }

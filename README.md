@@ -31,7 +31,10 @@ Accept: application/json
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/reservations` | List reservations |
+| `POST` | `/reservations` | Create a reservation |
 | `GET` | `/reservations/{id}` | Get a single reservation |
+| `PUT` | `/reservations/{id}` | Update a reservation |
+| `DELETE` | `/reservations/{id}` | Soft delete a reservation |
 
 **Query params for `GET /reservations`:**
 
@@ -42,6 +45,24 @@ Accept: application/json
 | `check_in_from` | date `Y-m-d` | Check-in on or after this date |
 | `check_in_to` | date `Y-m-d` | Check-in on or before this date |
 | `upcoming` | `1` / `0` | Only return upcoming reservations |
+
+**Body for `POST /reservations` and `PUT /reservations/{id}`:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `property_id` | integer | Yes (create) | Property ID |
+| `guest_name` | string | Yes (create) | Guest full name |
+| `guest_phone` | string | No | Guest phone number |
+| `guest_email` | string | No | Guest email |
+| `number_of_guests` | integer | No | Defaults to 1 |
+| `check_in` | date `Y-m-d` | Yes (create) | Check-in date |
+| `check_out` | date `Y-m-d` | Yes (create) | Check-out date (must be after check-in) |
+| `status` | string | No | `confirmed`, `checked_in`, `checked_out`, `cancelled` |
+| `notes` | string | No | Internal notes |
+| `source` | string | No | Booking source (default: `manual`) |
+| `airbnb_reservation_id` | string | No | Airbnb's ID (unique) |
+
+Deleted reservations are soft-deleted and excluded from all listing/show endpoints.
 
 ---
 

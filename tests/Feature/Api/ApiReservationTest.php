@@ -80,3 +80,84 @@ test('show returns reservation with nested property', function () {
     expect($response->json('data.id'))->toBe($reservation->id)
         ->and($response->json('data.property.id'))->toBe($this->property->id);
 });
+
+test('store creates a reservation', function () {
+    $response = $this->postJson('/api/v1/reservations', [
+        'property_id' => $this->property->id,
+        'guest_name' => 'Ana Ruiz',
+        'guest_email' => 'ana@example.com',
+        'guest_phone' => '+56912345678',
+        'number_of_guests' => 2,
+        'check_in' => '2026-05-01',
+        'check_out' => '2026-05-05',
+        'status' => 'confirmed',
+    ])->assertCreated();
+
+    expect($response->json('data.guest_name'))->toBe('Ana Ruiz')
+        ->and($response->json('data.check_in'))->toBe('2026-05-01')
+        ->and($response->json('data.status'))->toBe('confirmed')
+        ->and($response->json('data.property.id'))->toBe($this->property->id);
+
+    $this->assertDatabaseHas('reservations', ['guest_name' => 'Ana Ruiz']);
+});
+
+test('store requires guest_name, property_id, check_in, check_out', function () {
+    $this->postJson('/api/v1/reservations', [])->assertUnprocessable()
+        ->assertJsonValidationErrors(['property_id', 'guest_name', 'check_in', 'check_out']);
+});
+
+test('store validates check_out is after check_in', function () {
+    $this->postJson('/api/v1/reservations', [
+        'property_id' => $this->property->id,
+        'guest_name' => 'Test Guest',
+        'check_in' => '2026-05-05',
+        'check_out' => '2026-05-01',
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['check_out']);
+});
+
+test('update modifies an existing reservation', function () {
+    $reservation = Reservation::factory()->for($this->property)->create(['guest_name' => 'Old Name']);
+
+    $response = $this->putJson("/api/v1/reservations/{$reservation->id}", [
+        'guest_name' => 'New Name',
+        'status' => 'checked_in',
+    ])->assertSuccessful();
+
+    expect($response->json('data.guest_name'))->toBe('New Name')
+        ->and($response->json('data.status'))->toBe('checked_in');
+
+    $this->assertDatabaseHas('reservations', ['id' => $reservation->id, 'guest_name' => 'New Name']);
+});
+
+test('update validates status enum', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+
+    $this->putJson("/api/v1/reservations/{$reservation->id}", ['status' => 'invalid_status'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['status']);
+});
+
+test('destroy soft deletes a reservation', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+
+    $this->deleteJson("/api/v1/reservations/{$reservation->id}")->assertNoContent();
+
+    $this->assertSoftDeleted('reservations', ['id' => $reservation->id]);
+});
+
+test('soft deleted reservation is excluded from index', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+    $reservation->delete();
+
+    $this->getJson('/api/v1/reservations')
+        ->assertSuccessful()
+        ->assertJsonCount(0, 'data');
+});
+
+test('soft deleted reservation returns 404 on show', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+    $reservation->delete();
+
+    $this->getJson("/api/v1/reservations/{$reservation->id}")->assertNotFound();
+});

@@ -11,7 +11,10 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
     Route::get('properties/{property}', [PropertyController::class, 'show']);
 
     Route::get('reservations', [ReservationController::class, 'index']);
+    Route::post('reservations', [ReservationController::class, 'store']);
     Route::get('reservations/{reservation}', [ReservationController::class, 'show']);
+    Route::put('reservations/{reservation}', [ReservationController::class, 'update']);
+    Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy']);
 
     Route::get('cleaning-tasks', [CleaningTaskController::class, 'index']);
     Route::get('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'show']);

@@ -54,9 +54,66 @@
       "Bash(gh pr merge:*)",
       "Bash(echo:*)",
       "Skill(commit-commands:commit)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(TOKEN=\"1|eA5vOrKpQyZdSUX1hdj7DXbGBjT3wI4l3Vps5w15f8cf15ba\")",
+      "Bash(BASE=\"https://airbnb.freshwork.dev/api/v1\")",
+      "Bash(__NEW_LINE_8cc3da8ad85ed4f3__ echo \"=== AUTH TEST: No token \\(expect 401\\) ===\")",
+      "Bash(__NEW_LINE_8cc3da8ad85ed4f3__ echo \"\")",
+      "Bash(__NEW_LINE_3e2e4e5a9aa21c52__ echo \"=== Check base URL / connectivity ===\")",
+      "Bash(__NEW_LINE_7e985cab34938113__ echo \"\")",
+      "Bash(AUTH=\"-H \"\"Authorization: Bearer $TOKEN\"\" -H \"\"Accept: application/json\"\"\")",
+      "Bash(__NEW_LINE_4aba558b7d4cb0c9__ echo \"=== AUTH: No token -> expect 401 ===\")",
+      "Bash(__NEW_LINE_4ba88683c8352a08__ echo \"=== GET /properties ===\")",
+      "Bash(kubectl exec:*)",
+      "Bash(TOKEN=\"1|iTk6NaG43WMFqslnevl335zI5nbkjDdIpkPHKM5l115b4330\")",
+      "Bash(H=\"-H \"\"Authorization: Bearer $TOKEN\"\" -H \"\"Accept: application/json\"\"\")",
+      "Bash(__NEW_LINE_6b02cb4b96e63fac__ echo \"=== [1] AUTH: No token -> expect 401 ===\")",
+      "Bash(__NEW_LINE_6b02cb4b96e63fac__ echo \"=== [2] AUTH: Valid token -> expect 200 ===\")",
+      "Bash(__NEW_LINE_8516e5f5e6dca696__ echo \"=== [3] GET /properties ===\")",
+      "Bash(__NEW_LINE_8516e5f5e6dca696__ echo \"=== [4] GET /reservations ===\")",
+      "Bash(__NEW_LINE_8516e5f5e6dca696__ echo \"=== [5] GET /cleaning-tasks ===\")",
+      "Bash(__NEW_LINE_8516e5f5e6dca696__ echo \"=== [6] GET /contacts ===\")",
+      "Bash(__NEW_LINE_e2330a0bd4a44baa__ echo \"=== [3] GET /properties \\(list\\) ===\")",
+      "Bash(__NEW_LINE_e2330a0bd4a44baa__ echo \"=== [4] GET /properties/1 \\(show\\) ===\")",
+      "Bash(__NEW_LINE_e2330a0bd4a44baa__ echo \"=== [5] GET /properties/999 \\(not found\\) ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [6] GET /reservations \\(list\\) ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [7] GET /reservations/1 \\(show\\) ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [8] GET /reservations?property_id=1 \\(filter by property\\) ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [9] GET /reservations?property_id=2 \\(filter by property - no results\\) ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [10] GET /reservations?status=confirmed ===\")",
+      "Bash(__NEW_LINE_b66fe489234e86dc__ echo \"=== [11] GET /reservations?upcoming=true ===\")",
+      "Bash(__NEW_LINE_6f3271bb3ba7e511__ echo \"=== [11b] GET /reservations?upcoming=1 ===\")",
+      "Bash(__NEW_LINE_6f3271bb3ba7e511__ echo \"=== [11c] GET /reservations?upcoming=0 ===\")",
+      "Bash(__NEW_LINE_10afef0a7a261af0__ echo \"=== [12] GET /cleaning-tasks \\(list\\) ===\")",
+      "Bash(__NEW_LINE_10afef0a7a261af0__ echo \"=== [13] GET /cleaning-tasks/1 \\(show\\) ===\")",
+      "Bash(__NEW_LINE_10afef0a7a261af0__ echo \"=== [14] GET /cleaning-tasks?status=pending ===\")",
+      "Bash(__NEW_LINE_10afef0a7a261af0__ echo \"=== [15] GET /cleaning-tasks?property_id=1 ===\")",
+      "Bash(__NEW_LINE_10afef0a7a261af0__ echo \"=== [16] GET /cleaning-tasks?status=completed ===\")",
+      "Bash(__NEW_LINE_37a1472343c704d3__ echo \"=== [17] GET /contacts \\(list\\) ===\")",
+      "Bash(__NEW_LINE_37a1472343c704d3__ echo \"=== [18] GET /contacts/1 \\(show\\) ===\")",
+      "Bash(__NEW_LINE_37a1472343c704d3__ echo \"=== [19] GET /contacts?property_id=1 ===\")",
+      "Bash(__NEW_LINE_37a1472343c704d3__ echo \"=== [20] GET /contacts?property_id=2 \\(no results\\) ===\")",
+      "Bash(__NEW_LINE_faf79e6dfd9598ee__ echo \"=== [21] PATCH /cleaning-tasks/1/status -> in_progress ===\")",
+      "Bash(__NEW_LINE_faf79e6dfd9598ee__ echo \"=== [22] GET /cleaning-tasks/1 after in_progress update ===\")",
+      "Bash(__NEW_LINE_faf79e6dfd9598ee__ echo \"=== [23] PATCH /cleaning-tasks/1/status -> completed ===\")",
+      "Bash(__NEW_LINE_faf79e6dfd9598ee__ echo \"=== [24] GET /cleaning-tasks/1 after completed update ===\")",
+      "Bash(__NEW_LINE_faf79e6dfd9598ee__ echo \"=== [25] PATCH /cleaning-tasks/1/status -> invalid value ===\")",
+      "Bash(op vault list:*)",
+      "Bash(op signin:*)",
+      "Bash(op account list:*)",
+      "Bash(POD=airbnb-tool-54cf5ddf7c-l7jn4)",
+      "Bash(PASSWORD=\"qzvyr2XFG5AYfbVotXr75uPx\")",
+      "Bash(EMAIL=\"gonzalo.despirito@gmail.com\")",
+      "Bash(__NEW_LINE_2bbee343e7459224__ kubectl exec -n airbnb-tool $POD -- php artisan tinker --execute=\":*)",
+      "Bash(op item create:*)",
+      "Bash(cat:*)"
     ]
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "laravel-boost",
+    "herd"
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -80,10 +137,5 @@
         ]
       }
     ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "laravel-boost",
-    "herd"
-  ]
+  }
 }
