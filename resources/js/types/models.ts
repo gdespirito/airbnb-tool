@@ -1,3 +1,16 @@
+export type Contact = {
+    id: number;
+    name: string;
+    phone: string | null;
+    email: string | null;
+    role: 'cleaning' | 'handyman' | 'other';
+    notes: string | null;
+    cleaning_tasks?: CleaningTask[];
+    properties?: Property[];
+    created_at: string;
+    updated_at: string;
+};
+
 export type Property = {
     id: number;
     name: string;
@@ -10,8 +23,10 @@ export type Property = {
     longitude: number | null;
     checkin_time: string;
     checkout_time: string;
+    cleaning_contact_id: number | null;
     cleaning_contact_name: string | null;
     cleaning_contact_phone: string | null;
+    cleaning_contact?: Contact;
     metadata: Record<string, unknown> | null;
     upcoming_reservations_count?: number;
     reservations?: Reservation[];
@@ -23,6 +38,7 @@ export type CleaningTask = {
     id: number;
     property_id: number;
     reservation_id: number | null;
+    contact_id: number | null;
     status: 'pending' | 'notified' | 'in_progress' | 'completed' | 'verified';
     cleaning_type: 'checkout' | 'deep_clean' | 'touch_up';
     cleaning_fee: number | null;
@@ -32,6 +48,7 @@ export type CleaningTask = {
     notes: string | null;
     property?: Property;
     reservation?: Reservation;
+    contact?: Contact;
     created_at: string;
     updated_at: string;
 };

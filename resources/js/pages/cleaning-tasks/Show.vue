@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskController';
+import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -123,11 +124,19 @@ function deleteTask(): void {
                                 </Link>
                             </dd>
                         </div>
-                        <div v-if="cleaningTask.assigned_to" class="flex justify-between">
+                        <div v-if="cleaningTask.contact" class="flex justify-between">
+                            <dt class="text-muted-foreground">Contact</dt>
+                            <dd>
+                                <Link :href="ContactController.show(cleaningTask.contact).url" class="font-medium text-primary hover:underline">
+                                    {{ cleaningTask.contact.name }}
+                                </Link>
+                            </dd>
+                        </div>
+                        <div v-else-if="cleaningTask.assigned_to" class="flex justify-between">
                             <dt class="text-muted-foreground">Assigned To</dt>
                             <dd class="font-medium">{{ cleaningTask.assigned_to }}</dd>
                         </div>
-                        <div v-if="cleaningTask.assigned_phone" class="flex justify-between">
+                        <div v-if="!cleaningTask.contact && cleaningTask.assigned_phone" class="flex justify-between">
                             <dt class="text-muted-foreground">Phone</dt>
                             <dd class="font-medium">{{ cleaningTask.assigned_phone }}</dd>
                         </div>

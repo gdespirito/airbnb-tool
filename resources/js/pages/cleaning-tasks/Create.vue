@@ -9,10 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { type Property } from '@/types/models';
+import { type Contact, type Property } from '@/types/models';
 
 defineProps<{
     properties: Pick<Property, 'id' | 'name' | 'slug'>[];
+    contacts: Pick<Contact, 'id' | 'name' | 'role'>[];
     statuses: string[];
     cleaningTypes: string[];
 }>();
@@ -94,14 +95,29 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <InputError :message="errors.cleaning_fee" />
                     </div>
 
+                    <div class="grid gap-2 sm:col-span-2">
+                        <Label for="contact_id">Contact</Label>
+                        <select
+                            id="contact_id"
+                            name="contact_id"
+                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs focus-visible:ring-[3px] focus-visible:outline-none dark:bg-input/30"
+                        >
+                            <option value="">Select a contact</option>
+                            <option v-for="contact in contacts" :key="contact.id" :value="contact.id">
+                                {{ contact.name }} ({{ contact.role }})
+                            </option>
+                        </select>
+                        <InputError :message="errors.contact_id" />
+                    </div>
+
                     <div class="grid gap-2">
-                        <Label for="assigned_to">Assigned To</Label>
+                        <Label for="assigned_to">Assigned To (override)</Label>
                         <Input id="assigned_to" name="assigned_to" placeholder="Name" />
                         <InputError :message="errors.assigned_to" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="assigned_phone">Phone</Label>
+                        <Label for="assigned_phone">Phone (override)</Label>
                         <Input id="assigned_phone" name="assigned_phone" placeholder="+56 9 ..." />
                         <InputError :message="errors.assigned_phone" />
                     </div>

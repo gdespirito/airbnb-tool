@@ -22,6 +22,7 @@ class UpdateCleaningTaskRequest extends FormRequest
     {
         return [
             'property_id' => ['required', 'integer', 'exists:properties,id'],
+            'contact_id' => ['nullable', 'integer', 'exists:contacts,id'],
             'reservation_id' => ['nullable', 'integer', 'exists:reservations,id'],
             'status' => ['required', Rule::enum(CleaningTaskStatus::class)],
             'cleaning_type' => ['required', Rule::enum(CleaningType::class)],

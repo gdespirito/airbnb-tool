@@ -7,6 +7,7 @@ use App\Enums\CleaningType;
 use App\Http\Requests\CleaningTasks\StoreCleaningTaskRequest;
 use App\Http\Requests\CleaningTasks\UpdateCleaningTaskRequest;
 use App\Models\CleaningTask;
+use App\Models\Contact;
 use App\Models\Property;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -17,7 +18,7 @@ class CleaningTaskController extends Controller
     public function index(): Response
     {
         $cleaningTasks = CleaningTask::query()
-            ->with(['property', 'reservation'])
+            ->with(['property', 'reservation', 'contact'])
             ->upcoming()
             ->get();
 
@@ -30,6 +31,7 @@ class CleaningTaskController extends Controller
     {
         return Inertia::render('cleaning-tasks/Create', [
             'properties' => Property::all(['id', 'name', 'slug']),
+            'contacts' => Contact::query()->orderBy('name')->get(['id', 'name', 'role']),
             'statuses' => CleaningTaskStatus::cases(),
             'cleaningTypes' => CleaningType::cases(),
         ]);
@@ -44,7 +46,7 @@ class CleaningTaskController extends Controller
 
     public function show(CleaningTask $cleaningTask): Response
     {
-        $cleaningTask->load(['property', 'reservation']);
+        $cleaningTask->load(['property', 'reservation', 'contact']);
 
         return Inertia::render('cleaning-tasks/Show', [
             'cleaningTask' => $cleaningTask,
@@ -53,11 +55,12 @@ class CleaningTaskController extends Controller
 
     public function edit(CleaningTask $cleaningTask): Response
     {
-        $cleaningTask->load(['property', 'reservation']);
+        $cleaningTask->load(['property', 'reservation', 'contact']);
 
         return Inertia::render('cleaning-tasks/Edit', [
             'cleaningTask' => $cleaningTask,
             'properties' => Property::all(['id', 'name', 'slug']),
+            'contacts' => Contact::query()->orderBy('name')->get(['id', 'name', 'role']),
             'statuses' => CleaningTaskStatus::cases(),
             'cleaningTypes' => CleaningType::cases(),
         ]);

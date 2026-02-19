@@ -4,6 +4,7 @@ use App\Enums\CleaningTaskStatus;
 use App\Enums\CleaningType;
 use App\Enums\ReservationStatus;
 use App\Models\CleaningTask;
+use App\Models\Contact;
 use App\Models\Property;
 use App\Models\Reservation;
 use App\Models\User;
@@ -37,6 +38,7 @@ test('create page renders', function () {
         ->assertInertia(fn ($page) => $page
             ->component('cleaning-tasks/Create')
             ->has('properties')
+            ->has('contacts')
             ->has('statuses')
             ->has('cleaningTypes')
         );
@@ -127,6 +129,23 @@ test('destroy deletes a cleaning task', function () {
     $this->assertDatabaseMissing('cleaning_tasks', ['id' => $task->id]);
 });
 
+test('store creates a cleaning task with contact_id', function () {
+    $contact = Contact::factory()->create();
+
+    $this->post(route('cleaning-tasks.store'), [
+        'property_id' => $this->property->id,
+        'contact_id' => $contact->id,
+        'status' => CleaningTaskStatus::Pending->value,
+        'cleaning_type' => CleaningType::Checkout->value,
+        'scheduled_date' => now()->addDays(5)->format('Y-m-d'),
+    ])->assertRedirect();
+
+    $this->assertDatabaseHas('cleaning_tasks', [
+        'property_id' => $this->property->id,
+        'contact_id' => $contact->id,
+    ]);
+});
+
 test('observer auto-creates cleaning task when confirmed reservation is created', function () {
     $this->property->update([
         'cleaning_contact_name' => 'Eliene',
@@ -147,6 +166,23 @@ test('observer auto-creates cleaning task when confirmed reservation is created'
         ->and($task->cleaning_fee)->toBe(25000)
         ->and($task->assigned_to)->toBe('Eliene')
         ->and($task->assigned_phone)->toBe('+56999834369');
+});
+
+test('observer sets contact_id from property cleaning contact', function () {
+    $contact = Contact::factory()->create();
+    $this->property->update([
+        'cleaning_contact_id' => $contact->id,
+        'metadata' => ['cleaning_fee' => 30000],
+    ]);
+
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'status' => ReservationStatus::Confirmed,
+        'check_out' => now()->addDays(5)->format('Y-m-d'),
+    ]);
+
+    $task = $reservation->cleaningTask;
+    expect($task)->not->toBeNull()
+        ->and($task->contact_id)->toBe($contact->id);
 });
 
 test('observer does not create cleaning task for cancelled reservations', function () {

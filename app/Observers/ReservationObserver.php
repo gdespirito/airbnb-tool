@@ -21,6 +21,7 @@ class ReservationObserver
             'cleaning_type' => CleaningType::Checkout,
             'scheduled_date' => $reservation->check_out,
             'cleaning_fee' => $property->metadata['cleaning_fee'] ?? null,
+            'contact_id' => $property->cleaning_contact_id,
             'assigned_to' => $property->cleaning_contact_name,
             'assigned_phone' => $property->cleaning_contact_phone,
         ]);
