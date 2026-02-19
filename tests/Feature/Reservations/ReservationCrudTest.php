@@ -138,5 +138,5 @@ test('destroy deletes a reservation', function () {
     $this->delete(route('reservations.destroy', $reservation))
         ->assertRedirect(route('reservations.index'));
 
-    $this->assertDatabaseMissing('reservations', ['id' => $reservation->id]);
+    $this->assertSoftDeleted('reservations', ['id' => $reservation->id]);
 });
