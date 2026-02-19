@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class SyncHostexReservationsCommand extends Command
 {
-    protected $signature = 'hostex:sync';
+    protected $signature = 'hostex:sync {--all : Fetch all reservations instead of only upcoming}';
 
     protected $description = 'Sync reservations from Hostex API';
 
@@ -26,9 +26,11 @@ class SyncHostexReservationsCommand extends Command
 
         $this->info('Fetching reservations from Hostex...');
 
-        $reservations = $client->reservations([
-            'start_check_in_date' => now()->subDays(30)->toDateString(),
-        ]);
+        $filters = $this->option('all') ? [] : [
+            'start_check_out_date' => now()->toDateString(),
+        ];
+
+        $reservations = $client->reservations($filters);
 
         $this->info('Found '.count($reservations).' reservations.');
 
