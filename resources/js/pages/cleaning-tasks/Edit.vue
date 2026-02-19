@@ -14,8 +14,8 @@ import { type CleaningTask, type Property } from '@/types/models';
 const props = defineProps<{
     cleaningTask: CleaningTask;
     properties: Pick<Property, 'id' | 'name' | 'slug'>[];
-    statuses: { value: string; label?: string }[];
-    cleaningTypes: { value: string; label?: string }[];
+    statuses: string[];
+    cleaningTypes: string[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -67,8 +67,8 @@ function formatDateForInput(date: string): string {
                             :value="cleaningTask.cleaning_type"
                             class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs focus-visible:ring-[3px] focus-visible:outline-none dark:bg-input/30"
                         >
-                            <option v-for="type in cleaningTypes" :key="type.value" :value="type.value">
-                                {{ type.value.replace('_', ' ') }}
+                            <option v-for="type in cleaningTypes" :key="type" :value="type">
+                                {{ type.replace('_', ' ') }}
                             </option>
                         </select>
                         <InputError :message="errors.cleaning_type" />
@@ -83,8 +83,8 @@ function formatDateForInput(date: string): string {
                             :value="cleaningTask.status"
                             class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs focus-visible:ring-[3px] focus-visible:outline-none dark:bg-input/30"
                         >
-                            <option v-for="status in statuses" :key="status.value" :value="status.value">
-                                {{ status.value.replace('_', ' ') }}
+                            <option v-for="status in statuses" :key="status" :value="status">
+                                {{ status.replace('_', ' ') }}
                             </option>
                         </select>
                         <InputError :message="errors.status" />

@@ -14,7 +14,7 @@ import ReservationController from '@/actions/App/Http/Controllers/ReservationCon
 const props = defineProps<{
     reservation: Reservation;
     properties: Pick<Property, 'id' | 'name' | 'slug'>[];
-    statuses: { value: string; label?: string }[];
+    statuses: string[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -102,8 +102,8 @@ function formatDateForInput(date: string): string {
                             :value="reservation.status"
                             class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs focus-visible:ring-[3px] focus-visible:outline-none dark:bg-input/30"
                         >
-                            <option v-for="status in statuses" :key="status.value" :value="status.value">
-                                {{ status.value.replace('_', ' ') }}
+                            <option v-for="status in statuses" :key="status" :value="status">
+                                {{ status.replace('_', ' ') }}
                             </option>
                         </select>
                         <InputError :message="errors.status" />
