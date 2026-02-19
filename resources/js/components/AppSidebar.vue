@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarDays, Folder, Home, LayoutGrid, Sparkles } from 'lucide-vue-next';
+import { BookOpen, CalendarDays, Folder, Home, LayoutGrid, Sparkles, Users } from 'lucide-vue-next';
 import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskController';
+import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import NavFooter from '@/components/NavFooter.vue';
@@ -40,6 +41,11 @@ const mainNavItems: NavItem[] = [
         title: 'Cleaning Tasks',
         href: CleaningTaskController.index().url,
         icon: Sparkles,
+    },
+    {
+        title: 'Contacts',
+        href: ContactController.index().url,
+        icon: Users,
     },
 ];
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Property extends Model
@@ -22,6 +23,7 @@ class Property extends Model
         'longitude',
         'checkin_time',
         'checkout_time',
+        'cleaning_contact_id',
         'cleaning_contact_name',
         'cleaning_contact_phone',
         'metadata',
@@ -39,6 +41,11 @@ class Property extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function cleaningContact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class, 'cleaning_contact_id');
     }
 
     public function cleaningTasks(): HasMany

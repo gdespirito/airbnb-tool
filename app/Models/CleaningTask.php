@@ -17,6 +17,7 @@ class CleaningTask extends Model
     protected $fillable = [
         'property_id',
         'reservation_id',
+        'contact_id',
         'status',
         'cleaning_type',
         'cleaning_fee',
@@ -45,6 +46,11 @@ class CleaningTask extends Model
     public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);
+    }
+
+    public function contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class);
     }
 
     public function scopePending(Builder $query): Builder

@@ -4,6 +4,7 @@ import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskC
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
+import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import { type CleaningTask } from '@/types/models';
 
 defineProps<{
@@ -89,7 +90,16 @@ function formatFee(fee: number | null): string {
                                 </Link>
                             </td>
                             <td class="px-4 py-3">{{ typeLabel(task.cleaning_type) }}</td>
-                            <td class="px-4 py-3">{{ task.assigned_to ?? '-' }}</td>
+                            <td class="px-4 py-3">
+                                <Link
+                                    v-if="task.contact"
+                                    :href="ContactController.show(task.contact).url"
+                                    class="text-primary hover:underline"
+                                >
+                                    {{ task.contact.name }}
+                                </Link>
+                                <span v-else>{{ task.assigned_to ?? '-' }}</span>
+                            </td>
                             <td class="px-4 py-3">{{ formatFee(task.cleaning_fee) }}</td>
                             <td class="px-4 py-3">
                                 <span :class="['rounded-full px-2 py-0.5 text-xs font-medium capitalize', statusColor(task.status)]">
