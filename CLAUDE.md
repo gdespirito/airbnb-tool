@@ -310,3 +310,29 @@ When modifying API endpoints or adding new ones, remember to update the correspo
 All three agents use these skills to interact with the API. If the skills are out of date, agents may use wrong endpoints or miss new functionality.
 
 </laravel-boost-guidelines>
+
+## Infrastructure Context
+
+- Homelab runs Talos OS on a 4-node Kubernetes cluster (3 control plane + 1 worker)
+- Storage is Ceph managed via Rook operator and ArgoCD
+- Some standard Linux tools (e.g., lsblk LED blink) are unavailable on Talos OS
+- When draining nodes, PodDisruptionBudgets may require force shutdown
+
+## Deployment & Networking
+
+- When registering Laravel routes, always use fully qualified controller namespaces (e.g., App\Http\Controllers\ReservationNoteController)
+- UniFi firewall rules are order-dependent — check rule ordering when debugging connectivity
+- Gateway bind config uses enum values, not raw IP addresses
+- After changing Rook/Ceph CRDs, the Rook operator may need a restart to pick up changes
+
+## Development Workflow
+
+- This is an Airbnb management platform with multiple agents (OpenClaw, staff agent, WhatsApp bot)
+- Agents should process messages internally by default — never set deliver:true on webhook proxies unless explicitly requested
+- When a user message comes from a conversation thread, treat it as the user's own words, not the guest's reply
+- Prefer starting implementation quickly over extensive planning — avoid spending entire sessions on plan documents without writing code
+
+## Testing
+
+- For Laravel API testing, prefer tinker-based simulation over curl/HTTP when auth tokens are complex to obtain
+- Always run the full test suite after modifying routes, controllers, or middleware

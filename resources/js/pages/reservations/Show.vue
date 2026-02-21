@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskController';
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import { respond } from '@/actions/App/Http/Controllers/ReservationNoteController';
@@ -22,6 +23,28 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 function formatDate(date: string): string {
     return new Date(date).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function cleaningStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+        pending: 'Pending',
+        notified: 'Notified - waiting confirmation',
+        in_progress: 'In progress - cleaning now',
+        completed: 'Completed',
+        verified: 'Verified',
+    };
+    return labels[status] ?? status;
+}
+
+function cleaningStatusDot(status: string): string {
+    const colors: Record<string, string> = {
+        pending: 'bg-gray-400',
+        notified: 'bg-blue-500',
+        in_progress: 'bg-purple-500 animate-pulse',
+        completed: 'bg-green-500',
+        verified: 'bg-green-700',
+    };
+    return colors[status] ?? 'bg-gray-400';
 }
 
 function statusColor(status: string): string {
@@ -159,6 +182,39 @@ function deleteReservation(): void {
                         </div>
                     </dl>
                 </div>
+            </div>
+
+            <div v-if="reservation.cleaning_task" class="rounded-xl border bg-card p-5 shadow-sm">
+                <div class="mb-3 flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-muted-foreground">Cleaning</h3>
+                    <Link :href="CleaningTaskController.show(reservation.cleaning_task).url" class="text-xs text-primary hover:underline">
+                        View task
+                    </Link>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <span :class="['inline-block h-2.5 w-2.5 rounded-full', cleaningStatusDot(reservation.cleaning_task.status)]" />
+                        <span class="text-sm font-medium">{{ cleaningStatusLabel(reservation.cleaning_task.status) }}</span>
+                    </div>
+                </div>
+                <dl class="mt-3 space-y-1.5 text-sm">
+                    <div v-if="reservation.cleaning_task.contact" class="flex justify-between">
+                        <dt class="text-muted-foreground">Assigned to</dt>
+                        <dd class="font-medium">{{ reservation.cleaning_task.contact.name }}</dd>
+                    </div>
+                    <div v-if="reservation.cleaning_task.scheduled_date" class="flex justify-between">
+                        <dt class="text-muted-foreground">Date</dt>
+                        <dd class="font-medium">{{ formatDate(reservation.cleaning_task.scheduled_date) }}</dd>
+                    </div>
+                    <div v-if="reservation.cleaning_task.started_at" class="flex justify-between">
+                        <dt class="text-muted-foreground">Started</dt>
+                        <dd class="font-medium">{{ formatRelativeDate(reservation.cleaning_task.started_at) }}</dd>
+                    </div>
+                    <div v-if="reservation.cleaning_task.completed_at" class="flex justify-between">
+                        <dt class="text-muted-foreground">Completed</dt>
+                        <dd class="font-medium">{{ formatRelativeDate(reservation.cleaning_task.completed_at) }}</dd>
+                    </div>
+                </dl>
             </div>
 
             <div v-if="reservation.notes" class="rounded-xl border bg-card p-5 shadow-sm">

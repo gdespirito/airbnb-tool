@@ -129,7 +129,15 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(rsync:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Skill(k8s-cluster)",
+      "Bash(tail:*)",
+      "Bash(chmod +x:*)",
+      "Bash(kubectl run:*)",
+      "Bash(head:*)",
+      "Bash(/Users/gonza/code/airbnb-tool/pi/deploy-webhook-proxy.sh:*)",
+      "mcp__herd__find_available_services",
+      "Bash(gh run:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

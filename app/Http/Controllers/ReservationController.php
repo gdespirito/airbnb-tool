@@ -49,7 +49,11 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation): Response
     {
-        $reservation->load(['property', 'reservationNotes' => fn ($q) => $q->whereNull('parent_id')->with('replies')]);
+        $reservation->load([
+            'property',
+            'cleaningTask.contact',
+            'reservationNotes' => fn ($q) => $q->whereNull('parent_id')->with('replies'),
+        ]);
 
         return Inertia::render('reservations/Show', [
             'reservation' => $reservation,

@@ -90,6 +90,7 @@ export type Reservation = {
     source: string;
     is_same_day_turnover?: boolean;
     property?: Property;
+    cleaning_task?: CleaningTask;
     reservation_notes?: ReservationNote[];
     created_at: string;
     updated_at: string;
