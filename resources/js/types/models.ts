@@ -68,6 +68,7 @@ export type ReservationNote = {
     id: number;
     reservation_id: number;
     content: string;
+    response: string | null;
     from_agent: string | null;
     needs_response: boolean;
     responded_at: string | null;

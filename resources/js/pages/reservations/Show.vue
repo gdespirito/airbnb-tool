@@ -195,8 +195,9 @@ function deleteReservation(): void {
 
                         <p class="whitespace-pre-wrap text-sm">{{ note.content }}</p>
 
-                        <div v-if="note.responded_at" class="mt-1 text-xs text-muted-foreground">
-                            Responded {{ formatRelativeDate(note.responded_at) }}
+                        <div v-if="note.response" class="mt-2 rounded-md border bg-muted/50 p-3">
+                            <div class="mb-1 text-xs font-medium text-muted-foreground">Your response · {{ formatRelativeDate(note.responded_at!) }}</div>
+                            <p class="whitespace-pre-wrap text-sm">{{ note.response }}</p>
                         </div>
 
                         <div v-if="note.needs_response && !note.responded_at" class="mt-3">

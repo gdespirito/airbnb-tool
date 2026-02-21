@@ -11,10 +11,7 @@ class ReservationNoteController extends Controller
 {
     public function respond(RespondReservationNoteRequest $request, ReservationNote $reservationNote): RedirectResponse
     {
-        $reservationNote->update([
-            'content' => $request->validated('content'),
-        ]);
-
+        $reservationNote->response = $request->validated('content');
         $reservationNote->responded_at = now();
         $reservationNote->save();
 

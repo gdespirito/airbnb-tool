@@ -31,7 +31,8 @@ test('owner can respond to an agent note', function () {
 
     $note->refresh();
 
-    expect($note->content)->toBe('Thanks, I will handle it.')
+    expect($note->response)->toBe('Thanks, I will handle it.')
+        ->and($note->content)->not->toBe('Thanks, I will handle it.')
         ->and($note->responded_at)->not->toBeNull();
 
     Queue::assertPushed(NotifyAgentResponse::class, function ($job) use ($note) {

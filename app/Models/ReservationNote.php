@@ -15,6 +15,7 @@ class ReservationNote extends Model
     protected $fillable = [
         'reservation_id',
         'content',
+        'response',
         'from_agent',
         'needs_response',
     ];
