@@ -61,7 +61,7 @@ const respondForms = new Map<number, ReturnType<typeof useForm<{ content: string
 
 function getRespondForm(note: ReservationNote): ReturnType<typeof useForm<{ content: string }>> {
     if (!respondForms.has(note.id)) {
-        respondForms.set(note.id, useForm({ content: note.content }));
+        respondForms.set(note.id, useForm({ content: '' }));
     }
     return respondForms.get(note.id)!;
 }
