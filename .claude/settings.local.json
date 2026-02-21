@@ -117,7 +117,8 @@
       "Bash(argocd app sync:*)",
       "Bash(kubectl rollout:*)",
       "Bash(kubectl rollout status:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(composer require:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

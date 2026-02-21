@@ -40,6 +40,7 @@ allowed-tools: Bash(kubectl *), Bash(kubeseal *), Bash(argocd *), Read, Grep, Gl
 |------|----------|
 | `airbnb-tool-db-password` | DB credentials |
 | `airbnb-tool-secrets` | APP_KEY, HOSTEX_API_KEY |
+| `airbnb-tool-resend-key` | RESEND_KEY (email via Resend) |
 | `registry-pull-secret` | Docker registry auth |
 
 ## Common Operations
