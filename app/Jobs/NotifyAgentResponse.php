@@ -31,8 +31,7 @@ class NotifyAgentResponse implements ShouldQueue
         $response = Http::post($webhookUrl.'/agent-response', [
             'note_id' => $parent?->id ?? $this->note->id,
             'from_agent' => $parent?->from_agent ?? $this->note->from_agent,
-            'original_content' => $parent?->content,
-            'response' => $this->note->content,
+            'content' => $this->note->content,
             'guest_name' => $this->note->reservation->guest_name,
             'property_name' => $this->note->reservation->property->name,
         ]);
