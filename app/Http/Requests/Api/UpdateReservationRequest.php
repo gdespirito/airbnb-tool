@@ -31,6 +31,8 @@ class UpdateReservationRequest extends FormRequest
             'notes' => ['nullable', 'string'],
             'source' => ['sometimes', 'string', 'max:50'],
             'airbnb_reservation_id' => ['nullable', 'string', 'max:255', Rule::unique('reservations', 'airbnb_reservation_id')->ignore($this->reservation)],
+            'check_in_time' => ['nullable', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'check_out_time' => ['nullable', 'string', 'regex:/^\d{2}:\d{2}$/'],
         ];
     }
 }

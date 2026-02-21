@@ -210,6 +210,42 @@ test('index filters by check_out date range', function () {
         ->and($response->json('data.0.check_out'))->toBe('2026-03-05');
 });
 
+test('update saves check_in_time', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+
+    $response = $this->putJson("/api/v1/reservations/{$reservation->id}", [
+        'check_in_time' => '16:00',
+    ])->assertSuccessful();
+
+    expect($response->json('data.check_in_time'))->toBe('16:00');
+    $this->assertDatabaseHas('reservations', ['id' => $reservation->id, 'check_in_time' => '16:00']);
+});
+
+test('update saves check_out_time', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+
+    $response = $this->putJson("/api/v1/reservations/{$reservation->id}", [
+        'check_out_time' => '17:00',
+    ])->assertSuccessful();
+
+    expect($response->json('data.check_out_time'))->toBe('17:00');
+    $this->assertDatabaseHas('reservations', ['id' => $reservation->id, 'check_out_time' => '17:00']);
+});
+
+test('update rejects invalid time format for check_in_time and check_out_time', function () {
+    $reservation = Reservation::factory()->for($this->property)->create();
+
+    $this->putJson("/api/v1/reservations/{$reservation->id}", [
+        'check_in_time' => '9am',
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['check_in_time']);
+
+    $this->putJson("/api/v1/reservations/{$reservation->id}", [
+        'check_out_time' => '25:00:00',
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['check_out_time']);
+});
+
 test('soft deleted reservation returns 404 on show', function () {
     $reservation = Reservation::factory()->for($this->property)->create();
     $reservation->delete();
