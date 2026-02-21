@@ -106,7 +106,18 @@
       "Bash(EMAIL=\"gonzalo.despirito@gmail.com\")",
       "Bash(__NEW_LINE_2bbee343e7459224__ kubectl exec -n airbnb-tool $POD -- php artisan tinker --execute=\":*)",
       "Bash(op item create:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:hostex-openapi.readme.io)",
+      "WebFetch(domain:hostex.io)",
+      "Bash(sqlite3:*)",
+      "Bash(kubeseal:*)",
+      "Bash(/Users/gonza/code/k8s-infra/scripts/seal-secret.sh:*)",
+      "Bash(kubectl annotate:*)",
+      "Bash(kubectl patch:*)",
+      "Bash(argocd app sync:*)",
+      "Bash(kubectl rollout:*)",
+      "Bash(kubectl rollout status:*)",
+      "Bash(mkdir:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

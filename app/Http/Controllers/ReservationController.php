@@ -49,7 +49,7 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation): Response
     {
-        $reservation->load('property');
+        $reservation->load(['property', 'reservationNotes']);
 
         return Inertia::render('reservations/Show', [
             'reservation' => $reservation,

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\HostexWebhookController;
 use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\ReservationNoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('webhooks/hostex', HostexWebhookController::class);
@@ -18,6 +19,12 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
     Route::get('reservations/{reservation}', [ReservationController::class, 'show']);
     Route::put('reservations/{reservation}', [ReservationController::class, 'update']);
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy']);
+
+    Route::get('reservations/{reservation}/notes', [ReservationNoteController::class, 'index']);
+    Route::post('reservations/{reservation}/notes', [ReservationNoteController::class, 'store']);
+    Route::get('reservation-notes/{reservationNote}', [ReservationNoteController::class, 'show']);
+    Route::put('reservation-notes/{reservationNote}', [ReservationNoteController::class, 'update']);
+    Route::delete('reservation-notes/{reservationNote}', [ReservationNoteController::class, 'destroy']);
 
     Route::get('cleaning-tasks', [CleaningTaskController::class, 'index']);
     Route::get('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'show']);

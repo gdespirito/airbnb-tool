@@ -75,7 +75,7 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation): ReservationResource
     {
-        $reservation->load('property');
+        $reservation->load(['property', 'reservationNotes']);
 
         return new ReservationResource($reservation);
     }

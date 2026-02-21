@@ -35,6 +35,7 @@ class ReservationResource extends JsonResource
             'lock_code' => $this->lock_code,
             'hostex_conversation_id' => $this->hostex_conversation_id,
             'property' => new PropertyResource($this->whenLoaded('property')),
+            'reservation_notes' => ReservationNoteResource::collection($this->whenLoaded('reservationNotes')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

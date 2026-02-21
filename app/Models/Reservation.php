@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -64,6 +65,11 @@ class Reservation extends Model
     public function cleaningTask(): HasOne
     {
         return $this->hasOne(CleaningTask::class);
+    }
+
+    public function reservationNotes(): HasMany
+    {
+        return $this->hasMany(ReservationNote::class);
     }
 
     public function scopeUpcoming(Builder $query): Builder

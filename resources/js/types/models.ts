@@ -53,6 +53,14 @@ export type CleaningTask = {
     updated_at: string;
 };
 
+export type ReservationNote = {
+    id: number;
+    reservation_id: number;
+    content: string;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Reservation = {
     id: number;
     property_id: number;
@@ -68,6 +76,7 @@ export type Reservation = {
     source: string;
     is_same_day_turnover?: boolean;
     property?: Property;
+    reservation_notes?: ReservationNote[];
     created_at: string;
     updated_at: string;
 };

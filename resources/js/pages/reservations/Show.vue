@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
+import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { type Reservation } from '@/types/models';
-import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
-import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 
 const props = defineProps<{
     reservation: Reservation;
@@ -28,6 +28,29 @@ function statusColor(status: string): string {
         cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
     };
     return colors[status] ?? '';
+}
+
+function formatRelativeDate(date: string): string {
+    const now = new Date();
+    const d = new Date(date);
+    const diffMs = now.getTime() - d.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) {
+        return 'just now';
+    }
+    if (diffMins < 60) {
+        return `${diffMins}m ago`;
+    }
+    if (diffHours < 24) {
+        return `${diffHours}h ago`;
+    }
+    if (diffDays < 7) {
+        return `${diffDays}d ago`;
+    }
+    return d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function deleteReservation(): void {
@@ -123,6 +146,20 @@ function deleteReservation(): void {
             <div v-if="reservation.notes" class="rounded-xl border bg-card p-5 shadow-sm">
                 <h3 class="mb-2 text-sm font-medium text-muted-foreground">Notes</h3>
                 <p class="whitespace-pre-wrap text-sm">{{ reservation.notes }}</p>
+            </div>
+
+            <div v-if="reservation.reservation_notes?.length" class="rounded-xl border bg-card p-5 shadow-sm">
+                <h3 class="mb-3 text-sm font-medium text-muted-foreground">Agent Notes</h3>
+                <div class="space-y-3">
+                    <div
+                        v-for="note in reservation.reservation_notes"
+                        :key="note.id"
+                        class="border-b pb-3 last:border-b-0 last:pb-0"
+                    >
+                        <p class="whitespace-pre-wrap text-sm">{{ note.content }}</p>
+                        <time class="mt-1 block text-xs text-muted-foreground">{{ formatRelativeDate(note.created_at) }}</time>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>
