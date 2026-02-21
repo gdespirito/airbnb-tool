@@ -11,13 +11,18 @@ class ReservationNoteController extends Controller
 {
     public function respond(RespondReservationNoteRequest $request, ReservationNote $reservationNote): RedirectResponse
     {
-        $reservationNote->response = $request->validated('content');
+        $reply = ReservationNote::create([
+            'reservation_id' => $reservationNote->reservation_id,
+            'parent_id' => $reservationNote->id,
+            'content' => $request->validated('content'),
+        ]);
+
         $reservationNote->responded_at = now();
         $reservationNote->save();
 
-        $reservationNote->load('reservation.property');
+        $reply->load('reservation.property');
 
-        NotifyAgentResponse::dispatch($reservationNote);
+        NotifyAgentResponse::dispatch($reply);
 
         return back()->with('status', 'Response sent.');
     }

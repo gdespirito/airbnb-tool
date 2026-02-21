@@ -68,10 +68,11 @@ export type ReservationNote = {
     id: number;
     reservation_id: number;
     content: string;
-    response: string | null;
+    parent_id: number | null;
     from_agent: string | null;
     needs_response: boolean;
     responded_at: string | null;
+    replies?: ReservationNote[];
     created_at: string;
     updated_at: string;
 };

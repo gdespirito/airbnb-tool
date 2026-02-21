@@ -31,12 +31,18 @@ test('owner can respond to an agent note', function () {
 
     $note->refresh();
 
-    expect($note->response)->toBe('Thanks, I will handle it.')
-        ->and($note->content)->not->toBe('Thanks, I will handle it.')
+    expect($note->content)->not->toBe('Thanks, I will handle it.')
         ->and($note->responded_at)->not->toBeNull();
 
-    Queue::assertPushed(NotifyAgentResponse::class, function ($job) use ($note) {
-        return $job->note->id === $note->id;
+    $reply = $note->replies()->first();
+
+    expect($reply)->not->toBeNull()
+        ->and($reply->content)->toBe('Thanks, I will handle it.')
+        ->and($reply->parent_id)->toBe($note->id)
+        ->and($reply->reservation_id)->toBe($note->reservation_id);
+
+    Queue::assertPushed(NotifyAgentResponse::class, function ($job) use ($reply) {
+        return $job->note->id === $reply->id;
     });
 });
 
