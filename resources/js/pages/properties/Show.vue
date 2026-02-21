@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
+import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { type Property, type Reservation } from '@/types/models';
-import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
-import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
 
 const props = defineProps<{
     property: Property;
@@ -61,8 +61,8 @@ function statusColor(status: string): string {
                 </div>
                 <div class="rounded-xl border bg-card p-4 shadow-sm">
                     <p class="text-sm text-muted-foreground">Cleaning</p>
-                    <p class="text-lg font-semibold">{{ property.cleaning_contact_name || 'Not assigned' }}</p>
-                    <p v-if="property.cleaning_contact_phone" class="text-sm text-muted-foreground">{{ property.cleaning_contact_phone }}</p>
+                    <p class="text-lg font-semibold">{{ property.cleaning_contact?.name || 'Not assigned' }}</p>
+                    <p v-if="property.cleaning_contact?.phone" class="text-sm text-muted-foreground">{{ property.cleaning_contact.phone }}</p>
                 </div>
             </div>
 

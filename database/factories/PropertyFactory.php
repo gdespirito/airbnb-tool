@@ -25,8 +25,6 @@ class PropertyFactory extends Factory
             'longitude' => fake()->longitude(-75, -66),
             'checkin_time' => '15:00',
             'checkout_time' => '12:00',
-            'cleaning_contact_name' => fake()->name(),
-            'cleaning_contact_phone' => '+569'.fake()->numerify('########'),
             'metadata' => null,
         ];
     }

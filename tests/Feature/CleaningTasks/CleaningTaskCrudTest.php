@@ -147,9 +147,9 @@ test('store creates a cleaning task with contact_id', function () {
 });
 
 test('observer auto-creates cleaning task when confirmed reservation is created', function () {
+    $contact = Contact::factory()->create();
     $this->property->update([
-        'cleaning_contact_name' => 'Eliene',
-        'cleaning_contact_phone' => '+56999834369',
+        'cleaning_contact_id' => $contact->id,
         'metadata' => ['cleaning_fee' => 25000],
     ]);
 
@@ -164,8 +164,7 @@ test('observer auto-creates cleaning task when confirmed reservation is created'
         ->and($task->cleaning_type)->toBe(CleaningType::Checkout)
         ->and($task->scheduled_date->format('Y-m-d'))->toBe(now()->addDays(8)->format('Y-m-d'))
         ->and($task->cleaning_fee)->toBe(25000)
-        ->and($task->assigned_to)->toBe('Eliene')
-        ->and($task->assigned_phone)->toBe('+56999834369');
+        ->and($task->contact_id)->toBe($contact->id);
 });
 
 test('observer sets contact_id from property cleaning contact', function () {

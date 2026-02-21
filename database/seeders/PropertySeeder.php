@@ -20,8 +20,6 @@ class PropertySeeder extends Seeder
                 'longitude' => -71.9500,
                 'checkin_time' => '15:00',
                 'checkout_time' => '12:00',
-                'cleaning_contact_name' => 'Eliene',
-                'cleaning_contact_phone' => '+56999834369',
             ]
         );
 
@@ -36,8 +34,6 @@ class PropertySeeder extends Seeder
                 'longitude' => -72.3300,
                 'checkin_time' => '15:00',
                 'checkout_time' => '12:00',
-                'cleaning_contact_name' => 'Viviana Quintomán',
-                'cleaning_contact_phone' => '+56973978287',
             ]
         );
     }

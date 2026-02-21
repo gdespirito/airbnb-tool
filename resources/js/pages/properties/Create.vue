@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
+import { type Contact } from '@/types/models';
+
+defineProps<{
+    contacts: Pick<Contact, 'id' | 'name'>[];
+}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Properties', href: PropertyController.index().url },
@@ -70,16 +75,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <InputError :message="errors.ical_url" />
                     </div>
 
-                    <div class="grid gap-2">
-                        <Label for="cleaning_contact_name">Cleaning Contact</Label>
-                        <Input id="cleaning_contact_name" name="cleaning_contact_name" placeholder="Name" />
-                        <InputError :message="errors.cleaning_contact_name" />
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="cleaning_contact_phone">Cleaning Phone</Label>
-                        <Input id="cleaning_contact_phone" name="cleaning_contact_phone" placeholder="+56 9 ..." />
-                        <InputError :message="errors.cleaning_contact_phone" />
+                    <div class="grid gap-2 sm:col-span-2">
+                        <Label for="cleaning_contact_id">Cleaning Contact</Label>
+                        <select id="cleaning_contact_id" name="cleaning_contact_id" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                            <option value="">None</option>
+                            <option v-for="contact in contacts" :key="contact.id" :value="contact.id">{{ contact.name }}</option>
+                        </select>
+                        <InputError :message="errors.cleaning_contact_id" />
                     </div>
                 </div>
 

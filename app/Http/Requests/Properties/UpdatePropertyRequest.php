@@ -27,8 +27,7 @@ class UpdatePropertyRequest extends FormRequest
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'checkin_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
             'checkout_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
-            'cleaning_contact_name' => ['nullable', 'string', 'max:255'],
-            'cleaning_contact_phone' => ['nullable', 'string', 'max:30'],
+            'cleaning_contact_id' => ['nullable', 'exists:contacts,id'],
         ];
     }
 }

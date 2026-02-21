@@ -24,8 +24,6 @@ export type Property = {
     checkin_time: string;
     checkout_time: string;
     cleaning_contact_id: number | null;
-    cleaning_contact_name: string | null;
-    cleaning_contact_phone: string | null;
     cleaning_contact?: Contact;
     metadata: Record<string, unknown> | null;
     upcoming_reservations_count?: number;

@@ -24,8 +24,6 @@ class Property extends Model
         'checkin_time',
         'checkout_time',
         'cleaning_contact_id',
-        'cleaning_contact_name',
-        'cleaning_contact_phone',
         'hostex_property_id',
         'metadata',
     ];

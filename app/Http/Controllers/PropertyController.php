@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Properties\StorePropertyRequest;
 use App\Http\Requests\Properties\UpdatePropertyRequest;
+use App\Models\Contact;
 use App\Models\Property;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -14,6 +15,7 @@ class PropertyController extends Controller
     public function index(): Response
     {
         $properties = Property::query()
+            ->with('cleaningContact')
             ->withCount(['reservations as upcoming_reservations_count' => function ($query) {
                 $query->whereDate('check_in', '>=', now());
             }])
@@ -26,7 +28,9 @@ class PropertyController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('properties/Create');
+        return Inertia::render('properties/Create', [
+            'contacts' => Contact::query()->where('role', 'cleaning')->get(['id', 'name']),
+        ]);
     }
 
     public function store(StorePropertyRequest $request): RedirectResponse
@@ -39,6 +43,7 @@ class PropertyController extends Controller
     public function show(Property $property): Response
     {
         $property->load([
+            'cleaningContact',
             'reservations' => fn ($q) => $q->upcoming()->with('property')->limit(10),
         ]);
 
@@ -61,6 +66,7 @@ class PropertyController extends Controller
     {
         return Inertia::render('properties/Edit', [
             'property' => $property,
+            'contacts' => Contact::query()->where('role', 'cleaning')->get(['id', 'name']),
         ]);
     }
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { type Property } from '@/types/models';
-import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 
 defineProps<{
     properties: Property[];
@@ -64,9 +64,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <span class="text-muted-foreground">Check-out:</span>
                             <span class="ml-1 font-medium">{{ property.checkout_time }}</span>
                         </div>
-                        <div v-if="property.cleaning_contact_name" class="col-span-2">
+                        <div v-if="property.cleaning_contact" class="col-span-2">
                             <span class="text-muted-foreground">Cleaning:</span>
-                            <span class="ml-1 font-medium">{{ property.cleaning_contact_name }}</span>
+                            <span class="ml-1 font-medium">{{ property.cleaning_contact.name }}</span>
                         </div>
                     </div>
 
