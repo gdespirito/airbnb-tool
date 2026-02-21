@@ -98,3 +98,46 @@ Valid values: `pending`, `in_progress`, `completed`.
 |--------|----------|-------------|
 | `GET` | `/contacts` | List all contacts |
 | `GET` | `/contacts/{id}` | Get a single contact |
+
+---
+
+### Reservation Notes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/reservations/{id}/notes` | List notes for a reservation |
+| `POST` | `/reservations/{id}/notes` | Create a note |
+| `GET` | `/reservation-notes/{id}` | Get a single note |
+| `PUT` | `/reservation-notes/{id}` | Update a note |
+| `DELETE` | `/reservation-notes/{id}` | Delete a note |
+
+**Body for `POST /reservations/{id}/notes`:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `content` | string | Yes | Note content |
+| `from_agent` | string | No | Agent name (e.g. `alma`, `clo`) |
+| `needs_response` | boolean | No | Whether the note requires an owner response |
+
+When a note is created, an email is sent to all users via `ReservationNoteCreated`.
+
+#### Agent Notes & Response Flow
+
+Notes support a request/response workflow between AI agents and property owners:
+
+1. **Agent creates a note** — An agent (e.g. Alma) creates a note via the API with `from_agent` and `needs_response=true`. An email notification is sent to all users.
+2. **Owner sees it in the web UI** — The reservation show page displays agent notes with a "Pending response" badge and an inline response form.
+3. **Owner responds** — `PUT /reservation-notes/{id}/respond` (web route, not API). This creates a new `ReservationNote` linked to the original via `parent_id`, sets `responded_at` on the original, and dispatches the `NotifyAgentResponse` job.
+4. **Webhook notifies the agent** — The job sends a POST to the OpenClaw webhook proxy (`/agent-response`) with `note_id`, `from_agent`, `content` (the response), `guest_name`, and `property_name`. The proxy forwards it to the correct agent's gateway.
+
+```
+Guest asks Alma → Alma creates note (needs_response) → Email to owner
+→ Owner responds in web UI → Reply note created (parent_id)
+→ NotifyAgentResponse job → Webhook proxy → Alma receives response
+```
+
+**Key details:**
+- Responses are stored as separate `ReservationNote` records with `parent_id` pointing to the original note, preserving the original content.
+- The web UI only shows top-level notes (no `parent_id`) with their replies nested below.
+- Only notes with `needs_response=true` and no `responded_at` show the response form.
+- Atlas is not notified — only the originating agent receives the response.
