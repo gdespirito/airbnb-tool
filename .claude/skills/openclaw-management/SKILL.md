@@ -1,6 +1,6 @@
 ---
 name: openclaw
-description: Manage OpenClaw AI agents running on Raspberry Pi (pi@10.10.11.76). Use when working with OpenClaw configuration, agents (Alma/Atlas), WhatsApp bot, sessions, skills, knowledge files, heartbeat, or gateway. Activate when the user mentions openclaw, alma, atlas, agents, whatsapp bot, pi, or raspberry.
+description: Manage OpenClaw AI agents running on Raspberry Pi (pi@10.10.11.76). Use when working with OpenClaw configuration, agents (Alma/Atlas/Clo), WhatsApp bot, sessions, skills, knowledge files, heartbeat, or gateway. Activate when the user mentions openclaw, alma, atlas, clo, agents, whatsapp bot, pi, or raspberry.
 allowed-tools: Bash(ssh *), Bash(scp *), Read, Grep, Glob
 ---
 
@@ -22,10 +22,16 @@ Binary: `/home/pi/.npm-global/bin/openclaw`
 |-------|----|-----------|-------|---------|
 | Atlas | `main` | `~/.openclaw/workspace/` | claude-haiku-4-5 | Gonza's personal assistant |
 | Alma | `airbnb` | `~/.openclaw/workspace-airbnb/` | claude-opus-4-6 | Airbnb guest hospitality |
+| Clo | `staff` | `~/.openclaw/workspace-staff/` | claude-haiku-4-5 | Staff cleaning/maintenance coordination |
 
 ### Routing (WhatsApp bindings)
 
 - Gonza (+56988153776) → agent `main` (Atlas)
+- Mariana (+56967892397) → agent `main` (Atlas)
+- Eliene (+56999834369) → agent `staff` (Clo)
+- Viviana (+56973978287) → agent `staff` (Clo)
+- Guillermo (+56944374529) → agent `staff` (Clo)
+- Peña (+56986971605) → agent `staff` (Clo)
 - Everyone else → agent `airbnb` (Alma)
 - Commands restricted: only Gonza can run `/new`, `/usage`, `/reset` etc.
 
@@ -53,6 +59,18 @@ Binary: `/home/pi/.npm-global/bin/openclaw`
 - `~/.openclaw/media/pupuya/como-llegar.mp4` + 5 photos (`como-llegar-1.jpeg` to `como-llegar-5.jpeg`)
 
 NOTE: Media MUST be in `~/.openclaw/media/` (not workspace) for WhatsApp to send it.
+
+### Clo workspace (`~/.openclaw/workspace-staff/`)
+| File | Purpose |
+|------|---------|
+| `IDENTITY.md` | Name, language, emoji |
+| `SOUL.md` | Personality, limits, privacy rules for guest data |
+| `AGENTS.md` | Workflows: cleaning coordination, maintenance reports, free window queries |
+| `USER.md` | Properties, team info, owner contacts |
+| `HEARTBEAT.md` | Morning (~11:45) cleaning coordination, afternoon (~17:00) follow-up |
+| `skills/laravel-api/SKILL.md` | API documentation (same as Alma, different token path) |
+| `skills/cleaning-management/SKILL.md` | Cleaning coordination flow |
+| `config/api-token.txt` | Bearer token for airbnb.freshwork.dev API |
 
 ### Atlas workspace (`~/.openclaw/workspace/`)
 | File | Purpose |
@@ -113,7 +131,9 @@ with open('/home/pi/.openclaw/agents/airbnb/sessions/SESSION_ID.jsonl') as f:
 
 ### Update API token
 1. Generate on production: `kubectl exec -n airbnb-tool deploy/airbnb-tool -- php artisan tinker --execute='...'`
-2. Update on Pi: `ssh pi@10.10.11.76 "echo -n 'TOKEN' > ~/.openclaw/workspace-airbnb/config/api-token.txt"`
+2. Update on Pi for all agents that use the API:
+   - `ssh pi@10.10.11.76 "echo -n 'TOKEN' > ~/.openclaw/workspace-airbnb/config/api-token.txt"`
+   - `ssh pi@10.10.11.76 "echo -n 'TOKEN' > ~/.openclaw/workspace-staff/config/api-token.txt"`
 
 ### Add/update knowledge
 Edit files in `~/.openclaw/workspace-airbnb/knowledge/` (PUPUYA.md, PULLINQUE.md).

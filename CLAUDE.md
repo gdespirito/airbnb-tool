@@ -300,4 +300,13 @@ Vue components must have a single root element.
 - IMPORTANT: Always use the `search-docs` tool for detailed Laravel Fortify patterns and documentation.
 - IMPORTANT: Activate `developing-with-fortify` skill when working with Fortify authentication features.
 
+## OpenClaw API Skills
+
+When modifying API endpoints or adding new ones, remember to update the corresponding OpenClaw API skill files on the Raspberry Pi (pi@10.10.11.76):
+- Alma (airbnb agent): `~/.openclaw/workspace-airbnb/skills/laravel-api/SKILL.md`
+- Clo (staff agent): `~/.openclaw/workspace-staff/skills/laravel-api/SKILL.md` and `~/.openclaw/workspace-staff/skills/cleaning-management/SKILL.md`
+- Atlas (main agent): `~/.openclaw/workspace/skills/airbnb-api/SKILL.md`
+
+All three agents use these skills to interact with the API. If the skills are out of date, agents may use wrong endpoints or miss new functionality.
+
 </laravel-boost-guidelines>

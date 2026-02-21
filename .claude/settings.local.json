@@ -121,7 +121,15 @@
       "Bash(composer require:*)",
       "Bash(ls:*)",
       "Bash(kubectl wait:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "WebSearch",
+      "mcp__laravel-boost__last-error",
+      "Skill(openclaw-management)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(rsync:*)",
+      "Bash(git:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

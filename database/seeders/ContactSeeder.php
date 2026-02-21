@@ -27,6 +27,22 @@ class ContactSeeder extends Seeder
             ]
         );
 
+        Contact::firstOrCreate(
+            ['phone' => '+56944374529'],
+            [
+                'name' => 'Guillermo',
+                'role' => ContactRole::Handyman,
+            ]
+        );
+
+        Contact::firstOrCreate(
+            ['phone' => '+56986971605'],
+            [
+                'name' => 'Peña',
+                'role' => ContactRole::Handyman,
+            ]
+        );
+
         Property::where('slug', 'casa-pupuya')->update(['cleaning_contact_id' => $eliene->id]);
         Property::where('slug', 'cabana-pullinque')->update(['cleaning_contact_id' => $viviana->id]);
     }
