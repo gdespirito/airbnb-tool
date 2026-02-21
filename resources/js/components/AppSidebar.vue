@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarDays, Folder, Home, LayoutGrid, Sparkles, Users } from 'lucide-vue-next';
+import { CalendarDays, Home, LayoutGrid, Sparkles, Users } from 'lucide-vue-next';
 import CleaningTaskController from '@/actions/App/Http/Controllers/CleaningTaskController';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
@@ -51,14 +51,14 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
+        title: 'Hostex',
+        href: 'https://hostex.io',
+        icon: Home,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Airbnb',
+        href: 'https://airbnb.cl',
+        icon: CalendarDays,
     },
 ];
 </script>
