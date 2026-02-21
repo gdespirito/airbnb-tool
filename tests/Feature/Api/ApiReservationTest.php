@@ -165,6 +165,51 @@ test('soft deleted reservation is excluded from index', function () {
         ->assertJsonCount(0, 'data');
 });
 
+test('index filters current reservations', function () {
+    // Current: checked in yesterday, checks out tomorrow
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->subDay(),
+        'check_out' => now()->addDay(),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    // Past: already checked out
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->subDays(10),
+        'check_out' => now()->subDays(7),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    // Cancelled: same dates as current but cancelled
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->subDay(),
+        'check_out' => now()->addDay(),
+        'status' => ReservationStatus::Cancelled,
+    ]);
+
+    $response = $this->getJson('/api/v1/reservations?current=1')->assertSuccessful();
+
+    expect($response->json('data'))->toHaveCount(1)
+        ->and($response->json('data.0.status'))->toBe('confirmed');
+});
+
+test('index filters by check_out date range', function () {
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => '2026-03-01',
+        'check_out' => '2026-03-05',
+    ]);
+    Reservation::factory()->for($this->property)->create([
+        'check_in' => '2026-04-01',
+        'check_out' => '2026-04-10',
+    ]);
+
+    $response = $this->getJson('/api/v1/reservations?check_out_from=2026-03-01&check_out_to=2026-03-31')
+        ->assertSuccessful();
+
+    expect($response->json('data'))->toHaveCount(1)
+        ->and($response->json('data.0.check_out'))->toBe('2026-03-05');
+});
+
 test('soft deleted reservation returns 404 on show', function () {
     $reservation = Reservation::factory()->for($this->property)->create();
     $reservation->delete();

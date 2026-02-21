@@ -20,7 +20,10 @@ class ReservationController extends Controller
             'status' => ['nullable', 'string'],
             'check_in_from' => ['nullable', 'date'],
             'check_in_to' => ['nullable', 'date', 'after_or_equal:check_in_from'],
+            'check_out_from' => ['nullable', 'date'],
+            'check_out_to' => ['nullable', 'date'],
             'upcoming' => ['nullable', 'in:0,1,true,false'],
+            'current' => ['nullable', 'in:0,1,true,false'],
         ]);
 
         $query = Reservation::query()->with('property');
@@ -39,6 +42,20 @@ class ReservationController extends Controller
 
         if ($request->filled('check_in_to')) {
             $query->whereDate('check_in', '<=', $request->string('check_in_to'));
+        }
+
+        if ($request->filled('check_out_from')) {
+            $query->whereDate('check_out', '>=', $request->string('check_out_from'));
+        }
+
+        if ($request->filled('check_out_to')) {
+            $query->whereDate('check_out', '<=', $request->string('check_out_to'));
+        }
+
+        if ($request->boolean('current')) {
+            $query->whereDate('check_in', '<=', now())
+                ->whereDate('check_out', '>=', now())
+                ->whereNot('status', \App\Enums\ReservationStatus::Cancelled);
         }
 
         if ($request->boolean('upcoming')) {
