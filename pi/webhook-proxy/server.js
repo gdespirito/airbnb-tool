@@ -64,7 +64,7 @@ app.post("/agent-response", async (req, res) => {
     const result = await postToGateway("/hooks/agent", {
       message,
       agentId,
-      deliver: true,
+      deliver: false,
       channel: "whatsapp",
     });
 
