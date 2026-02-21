@@ -10,6 +10,7 @@ import { type CleaningTask } from '@/types/models';
 
 const props = defineProps<{
     cleaningTask: CleaningTask;
+    hasSameDayCheckin?: boolean;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -19,6 +20,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 function formatDate(date: string): string {
     return new Date(date).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatDatetime(datetime: string): string {
+    return new Date(datetime).toLocaleString('es-CL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
 function statusColor(status: string): string {
@@ -68,6 +73,9 @@ function deleteTask(): void {
                         <span class="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">
                             {{ typeLabel(cleaningTask.cleaning_type) }}
                         </span>
+                        <span v-if="hasSameDayCheckin" class="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
+                            Same-day check-in
+                        </span>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -101,6 +109,18 @@ function deleteTask(): void {
                         <div class="flex justify-between">
                             <dt class="text-muted-foreground">Fee</dt>
                             <dd class="font-medium">{{ formatFee(cleaningTask.cleaning_fee) }}</dd>
+                        </div>
+                        <div v-if="cleaningTask.estimated_arrival_time" class="flex justify-between">
+                            <dt class="text-muted-foreground">Estimated Arrival</dt>
+                            <dd class="font-medium">{{ cleaningTask.estimated_arrival_time }}</dd>
+                        </div>
+                        <div v-if="cleaningTask.started_at" class="flex justify-between">
+                            <dt class="text-muted-foreground">Started</dt>
+                            <dd class="font-medium">{{ formatDatetime(cleaningTask.started_at) }}</dd>
+                        </div>
+                        <div v-if="cleaningTask.completed_at" class="flex justify-between">
+                            <dt class="text-muted-foreground">Completed</dt>
+                            <dd class="font-medium">{{ formatDatetime(cleaningTask.completed_at) }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -147,6 +167,25 @@ function deleteTask(): void {
             <div v-if="cleaningTask.notes" class="rounded-xl border bg-card p-5 shadow-sm">
                 <h3 class="mb-2 text-sm font-medium text-muted-foreground">Notes</h3>
                 <p class="whitespace-pre-wrap text-sm">{{ cleaningTask.notes }}</p>
+            </div>
+
+            <div v-if="cleaningTask.photos && cleaningTask.photos.length > 0" class="rounded-xl border bg-card p-5 shadow-sm">
+                <h3 class="mb-3 text-sm font-medium text-muted-foreground">Photos ({{ cleaningTask.photos.length }})</h3>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    <a
+                        v-for="photo in cleaningTask.photos"
+                        :key="photo.id"
+                        :href="photo.url"
+                        target="_blank"
+                        class="group overflow-hidden rounded-lg border"
+                    >
+                        <img
+                            :src="photo.url"
+                            :alt="photo.original_filename"
+                            class="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                        />
+                    </a>
+                </div>
             </div>
         </div>
     </AppLayout>

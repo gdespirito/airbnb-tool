@@ -34,6 +34,13 @@ export type Property = {
     updated_at: string;
 };
 
+export type CleaningTaskPhoto = {
+    id: number;
+    url: string;
+    original_filename: string;
+    created_at: string;
+};
+
 export type CleaningTask = {
     id: number;
     property_id: number;
@@ -46,9 +53,13 @@ export type CleaningTask = {
     assigned_to: string | null;
     assigned_phone: string | null;
     notes: string | null;
+    estimated_arrival_time: string | null;
+    started_at: string | null;
+    completed_at: string | null;
     property?: Property;
     reservation?: Reservation;
     contact?: Contact;
+    photos?: CleaningTaskPhoto[];
     created_at: string;
     updated_at: string;
 };

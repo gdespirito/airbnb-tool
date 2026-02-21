@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CleaningTask extends Model
 {
@@ -25,6 +26,9 @@ class CleaningTask extends Model
         'assigned_to',
         'assigned_phone',
         'notes',
+        'estimated_arrival_time',
+        'started_at',
+        'completed_at',
         'metadata',
     ];
 
@@ -34,6 +38,8 @@ class CleaningTask extends Model
             'status' => CleaningTaskStatus::class,
             'cleaning_type' => CleaningType::class,
             'scheduled_date' => 'date',
+            'started_at' => 'datetime',
+            'completed_at' => 'datetime',
             'metadata' => 'array',
         ];
     }
@@ -51,6 +57,11 @@ class CleaningTask extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(CleaningTaskPhoto::class);
     }
 
     public function scopePending(Builder $query): Builder
@@ -72,5 +83,10 @@ class CleaningTask extends Model
     public function scopeCompleted(Builder $query): Builder
     {
         return $query->where('status', CleaningTaskStatus::Completed);
+    }
+
+    public function scopeForToday(Builder $query): Builder
+    {
+        return $query->whereDate('scheduled_date', today());
     }
 }

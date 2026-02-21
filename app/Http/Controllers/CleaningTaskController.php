@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Enums\CleaningTaskStatus;
 use App\Enums\CleaningType;
+use App\Enums\ReservationStatus;
 use App\Http\Requests\CleaningTasks\StoreCleaningTaskRequest;
 use App\Http\Requests\CleaningTasks\UpdateCleaningTaskRequest;
 use App\Models\CleaningTask;
 use App\Models\Contact;
 use App\Models\Property;
+use App\Models\Reservation;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -46,10 +48,17 @@ class CleaningTaskController extends Controller
 
     public function show(CleaningTask $cleaningTask): Response
     {
-        $cleaningTask->load(['property', 'reservation', 'contact']);
+        $cleaningTask->load(['property', 'reservation', 'contact', 'photos']);
+
+        $hasSameDayCheckin = Reservation::query()
+            ->where('property_id', $cleaningTask->property_id)
+            ->whereDate('check_in', $cleaningTask->scheduled_date)
+            ->whereNot('status', ReservationStatus::Cancelled)
+            ->exists();
 
         return Inertia::render('cleaning-tasks/Show', [
             'cleaningTask' => $cleaningTask,
+            'hasSameDayCheckin' => $hasSameDayCheckin,
         ]);
     }
 

@@ -27,8 +27,12 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
     Route::delete('reservation-notes/{reservationNote}', [ReservationNoteController::class, 'destroy']);
 
     Route::get('cleaning-tasks', [CleaningTaskController::class, 'index']);
+    Route::get('cleaning-tasks/today', [CleaningTaskController::class, 'today']);
     Route::get('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'show']);
+    Route::patch('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'update']);
     Route::patch('cleaning-tasks/{cleaningTask}/status', [CleaningTaskController::class, 'updateStatus']);
+    Route::post('cleaning-tasks/{cleaningTask}/photos', [CleaningTaskController::class, 'storePhotos']);
+    Route::post('cleaning-tasks/{cleaningTask}/complete', [CleaningTaskController::class, 'complete']);
 
     Route::get('contacts', [ContactController::class, 'index']);
     Route::get('contacts/{contact}', [ContactController::class, 'show']);

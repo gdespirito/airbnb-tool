@@ -27,6 +27,9 @@ class CleaningTaskFactory extends Factory
             'assigned_to' => fake()->name(),
             'assigned_phone' => '+569'.fake()->numerify('########'),
             'notes' => null,
+            'estimated_arrival_time' => null,
+            'started_at' => null,
+            'completed_at' => null,
             'metadata' => null,
         ];
     }
