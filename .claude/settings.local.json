@@ -118,7 +118,10 @@
       "Bash(kubectl rollout:*)",
       "Bash(kubectl rollout status:*)",
       "Bash(mkdir:*)",
-      "Bash(composer require:*)"
+      "Bash(composer require:*)",
+      "Bash(ls:*)",
+      "Bash(kubectl wait:*)",
+      "Bash(source:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
