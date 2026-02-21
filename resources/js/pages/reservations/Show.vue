@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PropertyController from '@/actions/App/Http/Controllers/PropertyController';
 import ReservationController from '@/actions/App/Http/Controllers/ReservationController';
+import { respond } from '@/actions/App/Http/Controllers/ReservationNoteController';
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { type Reservation } from '@/types/models';
+import { type Reservation, type ReservationNote } from '@/types/models';
 
 const props = defineProps<{
     reservation: Reservation;
@@ -51,6 +55,20 @@ function formatRelativeDate(date: string): string {
         return `${diffDays}d ago`;
     }
     return d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+const respondForms = new Map<number, ReturnType<typeof useForm<{ content: string }>>>();
+
+function getRespondForm(note: ReservationNote): ReturnType<typeof useForm<{ content: string }>> {
+    if (!respondForms.has(note.id)) {
+        respondForms.set(note.id, useForm({ content: note.content }));
+    }
+    return respondForms.get(note.id)!;
+}
+
+function submitResponse(note: ReservationNote): void {
+    const form = getRespondForm(note);
+    form.put(respond.url(note.id), { preserveScroll: true });
 }
 
 function deleteReservation(): void {
@@ -150,14 +168,51 @@ function deleteReservation(): void {
 
             <div v-if="reservation.reservation_notes?.length" class="rounded-xl border bg-card p-5 shadow-sm">
                 <h3 class="mb-3 text-sm font-medium text-muted-foreground">Agent Notes</h3>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <div
                         v-for="note in reservation.reservation_notes"
                         :key="note.id"
-                        class="border-b pb-3 last:border-b-0 last:pb-0"
+                        class="border-b pb-4 last:border-b-0 last:pb-0"
                     >
+                        <div class="mb-1 flex items-center gap-2">
+                            <span v-if="note.from_agent" class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                {{ note.from_agent }}
+                            </span>
+                            <span
+                                v-if="note.needs_response && !note.responded_at"
+                                class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                            >
+                                Pending response
+                            </span>
+                            <span
+                                v-else-if="note.responded_at"
+                                class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
+                            >
+                                Responded
+                            </span>
+                            <time class="text-xs text-muted-foreground">{{ formatRelativeDate(note.created_at) }}</time>
+                        </div>
+
                         <p class="whitespace-pre-wrap text-sm">{{ note.content }}</p>
-                        <time class="mt-1 block text-xs text-muted-foreground">{{ formatRelativeDate(note.created_at) }}</time>
+
+                        <div v-if="note.responded_at" class="mt-1 text-xs text-muted-foreground">
+                            Responded {{ formatRelativeDate(note.responded_at) }}
+                        </div>
+
+                        <div v-if="note.needs_response && !note.responded_at" class="mt-3">
+                            <form @submit.prevent="submitResponse(note)">
+                                <Textarea
+                                    v-model="getRespondForm(note).content"
+                                    rows="3"
+                                    class="mb-2"
+                                    placeholder="Write your response..."
+                                />
+                                <InputError :message="getRespondForm(note).errors.content" />
+                                <Button type="submit" size="sm" :disabled="getRespondForm(note).processing" class="mt-1">
+                                    Respond
+                                </Button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

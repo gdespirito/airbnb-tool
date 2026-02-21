@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationNoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -11,4 +12,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit');
     Route::put('reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+    Route::put('reservation-notes/{reservationNote}/respond', [ReservationNoteController::class, 'respond'])->name('reservation-notes.respond');
 });
