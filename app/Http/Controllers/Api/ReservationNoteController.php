@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreReservationNoteRequest;
 use App\Http\Requests\Api\UpdateReservationNoteRequest;
 use App\Http\Resources\ReservationNoteResource;
+use App\Jobs\NotifyAgentResponse;
 use App\Mail\ReservationNoteCreated;
 use App\Models\Reservation;
 use App\Models\ReservationNote;
@@ -41,9 +42,20 @@ class ReservationNoteController extends Controller
 
     public function update(UpdateReservationNoteRequest $request, ReservationNote $reservationNote): ReservationNoteResource
     {
+        $shouldNotifyAgent = $reservationNote->needs_response
+            && $reservationNote->responded_at === null
+            && $request->has('content');
+
         $reservationNote->update($request->validated());
 
-        return new ReservationNoteResource($reservationNote);
+        if ($shouldNotifyAgent) {
+            $reservationNote->responded_at = now();
+            $reservationNote->save();
+            $reservationNote->load('reservation.property');
+            NotifyAgentResponse::dispatch($reservationNote);
+        }
+
+        return new ReservationNoteResource($reservationNote->fresh());
     }
 
     public function destroy(ReservationNote $reservationNote): Response

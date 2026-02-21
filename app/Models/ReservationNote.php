@@ -15,7 +15,19 @@ class ReservationNote extends Model
     protected $fillable = [
         'reservation_id',
         'content',
+        'from_agent',
+        'needs_response',
     ];
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return [
+            'needs_response' => 'boolean',
+            'responded_at' => 'datetime',
+            'response_notified' => 'boolean',
+        ];
+    }
 
     public function reservation(): BelongsTo
     {

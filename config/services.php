@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'openclaw' => [
+        'webhook_url' => env('OPENCLAW_WEBHOOK_URL'),
+    ],
+
 ];

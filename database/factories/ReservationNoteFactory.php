@@ -17,4 +17,12 @@ class ReservationNoteFactory extends Factory
             'content' => fake()->sentence(),
         ];
     }
+
+    public function needsResponse(string $agent = 'alma'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'from_agent' => $agent,
+            'needs_response' => true,
+        ]);
+    }
 }

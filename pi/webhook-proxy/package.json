@@ -1,0 +1,12 @@
+{
+  "name": "openclaw-webhook-proxy",
+  "version": "1.0.0",
+  "description": "Bridge between K8s (LAN) and OpenClaw gateway (loopback)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

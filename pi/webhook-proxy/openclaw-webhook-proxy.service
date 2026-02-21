@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenClaw Webhook Proxy
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.openclaw/webhook-proxy
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=default.target

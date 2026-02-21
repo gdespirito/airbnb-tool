@@ -1,11 +1,13 @@
 <?php
 
+use App\Jobs\NotifyAgentResponse;
 use App\Mail\ReservationNoteCreated;
 use App\Models\Property;
 use App\Models\Reservation;
 use App\Models\ReservationNote;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -94,4 +96,81 @@ test('reservation show includes notes', function () {
         ->assertSuccessful();
 
     expect($response->json('data.reservation_notes'))->toHaveCount(2);
+});
+
+test('store creates note with needs_response and from_agent', function () {
+    Mail::fake();
+
+    $response = $this->postJson("/api/v1/reservations/{$this->reservation->id}/notes", [
+        'content' => 'Can the guest do late checkout at 17:00?',
+        'from_agent' => 'alma',
+        'needs_response' => true,
+    ])->assertCreated();
+
+    expect($response->json('data.from_agent'))->toBe('alma')
+        ->and($response->json('data.needs_response'))->toBeTrue()
+        ->and($response->json('data.responded_at'))->toBeNull();
+});
+
+test('store validates from_agent must be valid agent name', function () {
+    Mail::fake();
+
+    $this->postJson("/api/v1/reservations/{$this->reservation->id}/notes", [
+        'content' => 'Test note',
+        'from_agent' => 'invalid_agent',
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['from_agent']);
+});
+
+test('update with content on needs_response note sets responded_at and dispatches job', function () {
+    Queue::fake();
+
+    $note = ReservationNote::factory()
+        ->needsResponse()
+        ->for($this->reservation)
+        ->create(['content' => 'Can the guest do late checkout?']);
+
+    $this->putJson("/api/v1/reservation-notes/{$note->id}", [
+        'content' => 'Yes, authorized late checkout until 17:00',
+    ])->assertSuccessful();
+
+    $note->refresh();
+    expect($note->responded_at)->not->toBeNull()
+        ->and($note->content)->toBe('Yes, authorized late checkout until 17:00');
+
+    Queue::assertPushed(NotifyAgentResponse::class, function (NotifyAgentResponse $job) use ($note) {
+        return $job->note->id === $note->id;
+    });
+});
+
+test('update on regular note does not dispatch job', function () {
+    Queue::fake();
+
+    $note = ReservationNote::factory()
+        ->for($this->reservation)
+        ->create(['content' => 'Regular note']);
+
+    $this->putJson("/api/v1/reservation-notes/{$note->id}", [
+        'content' => 'Updated regular note',
+    ])->assertSuccessful();
+
+    Queue::assertNotPushed(NotifyAgentResponse::class);
+});
+
+test('update on already responded note does not dispatch job again', function () {
+    Queue::fake();
+
+    $note = ReservationNote::factory()
+        ->needsResponse()
+        ->for($this->reservation)
+        ->create([
+            'content' => 'Already responded',
+            'responded_at' => now(),
+        ]);
+
+    $this->putJson("/api/v1/reservation-notes/{$note->id}", [
+        'content' => 'Another update',
+    ])->assertSuccessful();
+
+    Queue::assertNotPushed(NotifyAgentResponse::class);
 });
