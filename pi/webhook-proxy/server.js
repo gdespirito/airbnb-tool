@@ -11,7 +11,7 @@ const HOOKS_TOKEN = "kuma_2026-02-08_5a64b5c8e6c24e5bb35bf9d5";
 
 const AGENT_MAP = {
   alma: "airbnb",
-  clo: "staff",
+  tita: "staff",
   atlas: "main",
 };
 

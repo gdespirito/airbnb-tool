@@ -19,7 +19,7 @@ class StoreReservationNoteRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string'],
-            'from_agent' => ['nullable', 'string', 'in:alma,clo,atlas'],
+            'from_agent' => ['nullable', 'string', 'in:alma,tita,atlas'],
             'needs_response' => ['nullable', 'boolean'],
         ];
     }

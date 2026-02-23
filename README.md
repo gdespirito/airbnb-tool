@@ -116,7 +116,7 @@ Valid values: `pending`, `in_progress`, `completed`.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `content` | string | Yes | Note content |
-| `from_agent` | string | No | Agent name (e.g. `alma`, `clo`) |
+| `from_agent` | string | No | Agent name (e.g. `alma`, `tita`) |
 | `needs_response` | boolean | No | Whether the note requires an owner response |
 
 When a note is created, an email is sent to all users via `ReservationNoteCreated`.

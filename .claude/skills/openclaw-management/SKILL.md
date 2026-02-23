@@ -1,6 +1,6 @@
 ---
 name: openclaw
-description: Manage OpenClaw AI agents running on Raspberry Pi (pi@10.10.11.76). Use when working with OpenClaw configuration, agents (Alma/Atlas/Clo), WhatsApp bot, sessions, skills, knowledge files, heartbeat, or gateway. Activate when the user mentions openclaw, alma, atlas, clo, agents, whatsapp bot, pi, or raspberry.
+description: Manage OpenClaw AI agents running on Raspberry Pi (pi@10.10.11.76). Use when working with OpenClaw configuration, agents (Alma/Atlas/Tita), WhatsApp bot, sessions, skills, knowledge files, heartbeat, or gateway. Activate when the user mentions openclaw, alma, atlas, tita, agents, whatsapp bot, pi, or raspberry.
 allowed-tools: Bash(ssh *), Bash(scp *), Read, Grep, Glob
 ---
 
@@ -22,16 +22,16 @@ Binary: `/home/pi/.npm-global/bin/openclaw`
 |-------|----|-----------|-------|---------|
 | Atlas | `main` | `~/.openclaw/workspace/` | claude-haiku-4-5 | Gonza's personal assistant |
 | Alma | `airbnb` | `~/.openclaw/workspace-airbnb/` | claude-opus-4-6 | Airbnb guest hospitality |
-| Clo | `staff` | `~/.openclaw/workspace-staff/` | claude-haiku-4-5 | Staff cleaning/maintenance coordination |
+| Tita | `staff` | `~/.openclaw/workspace-staff/` | claude-haiku-4-5 | Staff cleaning/maintenance coordination |
 
 ### Routing (WhatsApp bindings)
 
 - Gonza (+56988153776) → agent `main` (Atlas)
 - Mariana (+56967892397) → agent `main` (Atlas)
-- Eliene (+56999834369) → agent `staff` (Clo)
-- Viviana (+56973978287) → agent `staff` (Clo)
-- Guillermo (+56944374529) → agent `staff` (Clo)
-- Peña (+56986971605) → agent `staff` (Clo)
+- Eliene (+56999834369) → agent `staff` (Tita)
+- Viviana (+56973978287) → agent `staff` (Tita)
+- Guillermo (+56944374529) → agent `staff` (Tita)
+- Peña (+56986971605) → agent `staff` (Tita)
 - Everyone else → agent `airbnb` (Alma)
 - Commands restricted: only Gonza can run `/new`, `/usage`, `/reset` etc.
 
@@ -60,7 +60,7 @@ Binary: `/home/pi/.npm-global/bin/openclaw`
 
 NOTE: Media MUST be in `~/.openclaw/media/` (not workspace) for WhatsApp to send it.
 
-### Clo workspace (`~/.openclaw/workspace-staff/`)
+### Tita workspace (`~/.openclaw/workspace-staff/`)
 | File | Purpose |
 |------|---------|
 | `IDENTITY.md` | Name, language, emoji |
