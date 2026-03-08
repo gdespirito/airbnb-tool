@@ -72,6 +72,11 @@ class Reservation extends Model
         return $this->hasMany(ReservationNote::class);
     }
 
+    public function conversationLogs(): HasMany
+    {
+        return $this->hasMany(ConversationLog::class);
+    }
+
     public function scopeUpcoming(Builder $query): Builder
     {
         return $query->whereDate('check_in', '>=', now())

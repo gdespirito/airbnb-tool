@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CleaningTaskController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\ConversationLogController;
 use App\Http\Controllers\Api\HostexWebhookController;
 use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\ReservationController;
@@ -36,4 +37,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
 
     Route::get('contacts', [ContactController::class, 'index']);
     Route::get('contacts/{contact}', [ContactController::class, 'show']);
+
+    // Conversation logs
+    Route::get('reservations/{reservation}/conversation-logs', [ConversationLogController::class, 'index']);
+    Route::post('reservations/{reservation}/conversation-logs', [ConversationLogController::class, 'store']);
+    Route::get('conversation-logs/{conversationLog}', [ConversationLogController::class, 'show']);
 });
