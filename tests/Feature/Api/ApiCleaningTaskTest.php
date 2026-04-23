@@ -104,21 +104,55 @@ test('updateStatus requires status field', function () {
         ->assertUnprocessable();
 });
 
-test('today returns only tasks scheduled for today', function () {
+test('today returns active tasks scheduled up to today, not future ones', function () {
     CleaningTask::factory()->for($this->property)->create([
         'scheduled_date' => today(),
+        'status' => CleaningTaskStatus::Pending,
     ]);
     CleaningTask::factory()->for($this->property)->create([
         'scheduled_date' => today()->addDays(1),
-    ]);
-    CleaningTask::factory()->for($this->property)->create([
-        'scheduled_date' => today()->subDays(1),
+        'status' => CleaningTaskStatus::Pending,
     ]);
 
     $response = $this->getJson('/api/v1/cleaning-tasks/today')->assertSuccessful();
 
     expect($response->json('data'))->toHaveCount(1)
         ->and($response->json('meta.date'))->toBe(today()->toDateString());
+});
+
+test('today includes pending tasks from previous days (stickiness)', function () {
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today()->subDays(3),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+        'status' => CleaningTaskStatus::Notified,
+    ]);
+
+    $response = $this->getJson('/api/v1/cleaning-tasks/today')->assertSuccessful();
+
+    expect($response->json('data'))->toHaveCount(2);
+});
+
+test('today excludes completed and skipped tasks', function () {
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+        'status' => CleaningTaskStatus::Completed,
+    ]);
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today()->subDays(2),
+        'status' => CleaningTaskStatus::Skipped,
+    ]);
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+
+    $response = $this->getJson('/api/v1/cleaning-tasks/today')->assertSuccessful();
+
+    expect($response->json('data'))->toHaveCount(1)
+        ->and($response->json('data.0.status'))->toBe('pending');
 });
 
 test('today includes same-day checkin info', function () {
@@ -270,4 +304,102 @@ test('storePhotos rejects more than 5 photos', function () {
     $this->postJson("/api/v1/cleaning-tasks/{$task->id}/photos", [
         'photos' => $photos,
     ])->assertUnprocessable();
+});
+
+test('store creates a cleaning task manually', function () {
+    $contact = Contact::factory()->create();
+
+    $response = $this->postJson('/api/v1/cleaning-tasks', [
+        'property_id' => $this->property->id,
+        'contact_id' => $contact->id,
+        'scheduled_date' => today()->toDateString(),
+        'cleaning_type' => 'checkout',
+        'notes' => 'Creada manualmente por red de seguridad',
+    ])->assertSuccessful();
+
+    expect($response->json('data.property.id'))->toBe($this->property->id)
+        ->and($response->json('data.status'))->toBe('pending');
+
+    $this->assertDatabaseHas('cleaning_tasks', [
+        'property_id' => $this->property->id,
+        'contact_id' => $contact->id,
+        'notes' => 'Creada manualmente por red de seguridad',
+        'status' => 'pending',
+    ]);
+});
+
+test('store requires property_id and scheduled_date', function () {
+    $this->postJson('/api/v1/cleaning-tasks', [])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['property_id', 'scheduled_date']);
+});
+
+test('checking in a reservation skips stale cleaning tasks in same property', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => today(),
+        'check_out' => today()->addDays(3),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $staleTask = CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today()->subDays(4),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+
+    $reservation->update(['status' => ReservationStatus::CheckedIn]);
+
+    expect($staleTask->fresh()->status)->toBe(CleaningTaskStatus::Skipped);
+});
+
+test('checking in a reservation does not skip tasks from other properties', function () {
+    $other = Property::factory()->create();
+
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => today(),
+        'check_out' => today()->addDays(3),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $otherTask = CleaningTask::factory()->for($other)->create([
+        'scheduled_date' => today()->subDays(2),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+
+    $reservation->update(['status' => ReservationStatus::CheckedIn]);
+
+    expect($otherTask->fresh()->status)->toBe(CleaningTaskStatus::Pending);
+});
+
+test('checking in a reservation does not skip future cleaning tasks', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => today(),
+        'check_out' => today()->addDays(3),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $futureTask = CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today()->addDays(2),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+
+    $reservation->update(['status' => ReservationStatus::CheckedIn]);
+
+    expect($futureTask->fresh()->status)->toBe(CleaningTaskStatus::Pending);
+});
+
+test('checking in a reservation does not affect completed tasks', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => today(),
+        'check_out' => today()->addDays(3),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $completedTask = CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today()->subDays(2),
+        'status' => CleaningTaskStatus::Completed,
+    ]);
+
+    $reservation->update(['status' => ReservationStatus::CheckedIn]);
+
+    expect($completedTask->fresh()->status)->toBe(CleaningTaskStatus::Completed);
 });

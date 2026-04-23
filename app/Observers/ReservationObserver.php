@@ -2,8 +2,10 @@
 
 namespace App\Observers;
 
+use App\Enums\CleaningTaskStatus;
 use App\Enums\CleaningType;
 use App\Enums\ReservationStatus;
+use App\Models\CleaningTask;
 use App\Models\Reservation;
 
 class ReservationObserver
@@ -27,12 +29,26 @@ class ReservationObserver
 
     public function updated(Reservation $reservation): void
     {
-        if (! $reservation->wasChanged('check_out')) {
-            return;
+        if ($reservation->wasChanged('check_out')) {
+            $reservation->cleaningTask?->update([
+                'scheduled_date' => $reservation->check_out,
+            ]);
         }
 
-        $reservation->cleaningTask?->update([
-            'scheduled_date' => $reservation->check_out,
-        ]);
+        if ($reservation->wasChanged('status')
+            && $reservation->status === ReservationStatus::CheckedIn) {
+            $this->skipStaleCleaningTasks($reservation);
+        }
+    }
+
+    private function skipStaleCleaningTasks(Reservation $reservation): void
+    {
+        CleaningTask::query()
+            ->where('property_id', $reservation->property_id)
+            ->whereDate('scheduled_date', '<', $reservation->check_in)
+            ->whereIn('status', CleaningTaskStatus::activeStatuses())
+            ->update([
+                'status' => CleaningTaskStatus::Skipped,
+            ]);
     }
 }
