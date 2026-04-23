@@ -23,11 +23,24 @@ enum CleaningTaskStatus: string
         };
     }
 
+    public function isTerminal(): bool
+    {
+        return match ($this) {
+            self::Completed, self::Verified, self::Skipped => true,
+            self::Pending, self::Notified, self::InProgress => false,
+        };
+    }
+
+    public function isActive(): bool
+    {
+        return ! $this->isTerminal();
+    }
+
     /**
      * @return array<int, self>
      */
     public static function activeStatuses(): array
     {
-        return [self::Pending, self::Notified, self::InProgress];
+        return array_values(array_filter(self::cases(), fn (self $status): bool => $status->isActive()));
     }
 }

@@ -73,6 +73,8 @@ class CleaningTaskController extends Controller
             $task->setAttribute('has_same_day_checkin', $nextReservation !== null);
             $task->setAttribute('next_guest_name', $nextReservation?->guest_name);
             $task->setAttribute('checkin_time', $task->property?->checkin_time);
+            $task->setAttribute('is_sticky', $task->scheduled_date->lt(today()));
+            $task->setAttribute('days_overdue', (int) $task->scheduled_date->diffInDays(today(), absolute: false));
 
             return $task;
         }))->additional([

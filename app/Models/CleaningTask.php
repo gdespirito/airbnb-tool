@@ -85,14 +85,13 @@ class CleaningTask extends Model
         return $query->where('status', CleaningTaskStatus::Completed);
     }
 
-    public function scopeForToday(Builder $query): Builder
-    {
-        return $query->whereDate('scheduled_date', '<=', today())
-            ->whereIn('status', CleaningTaskStatus::activeStatuses());
-    }
-
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereIn('status', CleaningTaskStatus::activeStatuses());
+    }
+
+    public function scopeForToday(Builder $query): Builder
+    {
+        return $query->active()->whereDate('scheduled_date', '<=', today());
     }
 }

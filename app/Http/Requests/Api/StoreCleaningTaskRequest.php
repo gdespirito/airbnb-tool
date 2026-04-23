@@ -22,7 +22,12 @@ class StoreCleaningTaskRequest extends FormRequest
     {
         return [
             'property_id' => ['required', 'integer', 'exists:properties,id'],
-            'reservation_id' => ['nullable', 'integer', 'exists:reservations,id'],
+            'reservation_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('reservations', 'id')
+                    ->where('property_id', $this->input('property_id')),
+            ],
             'contact_id' => ['nullable', 'integer', 'exists:contacts,id'],
             'status' => ['nullable', Rule::enum(CleaningTaskStatus::class)],
             'cleaning_type' => ['nullable', Rule::enum(CleaningType::class)],

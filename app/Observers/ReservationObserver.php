@@ -2,14 +2,17 @@
 
 namespace App\Observers;
 
-use App\Enums\CleaningTaskStatus;
+use App\Actions\CleaningTasks\SkipStaleCleaningTasks;
 use App\Enums\CleaningType;
 use App\Enums\ReservationStatus;
-use App\Models\CleaningTask;
 use App\Models\Reservation;
 
 class ReservationObserver
 {
+    public function __construct(
+        private readonly SkipStaleCleaningTasks $skipStaleCleaningTasks,
+    ) {}
+
     public function created(Reservation $reservation): void
     {
         if ($reservation->status !== ReservationStatus::Confirmed) {
@@ -37,18 +40,10 @@ class ReservationObserver
 
         if ($reservation->wasChanged('status')
             && $reservation->status === ReservationStatus::CheckedIn) {
-            $this->skipStaleCleaningTasks($reservation);
+            $this->skipStaleCleaningTasks->forProperty(
+                $reservation->property_id,
+                $reservation->check_in,
+            );
         }
-    }
-
-    private function skipStaleCleaningTasks(Reservation $reservation): void
-    {
-        CleaningTask::query()
-            ->where('property_id', $reservation->property_id)
-            ->whereDate('scheduled_date', '<', $reservation->check_in)
-            ->whereIn('status', CleaningTaskStatus::activeStatuses())
-            ->update([
-                'status' => CleaningTaskStatus::Skipped,
-            ]);
     }
 }
