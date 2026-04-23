@@ -38,12 +38,17 @@ class ReservationObserver
             ]);
         }
 
-        if ($reservation->wasChanged('status')
-            && $reservation->status === ReservationStatus::CheckedIn) {
-            $this->skipStaleCleaningTasks->forProperty(
+        if (! $reservation->wasChanged('status')) {
+            return;
+        }
+
+        match ($reservation->status) {
+            ReservationStatus::CheckedIn => $this->skipStaleCleaningTasks->forProperty(
                 $reservation->property_id,
                 $reservation->check_in,
-            );
-        }
+            ),
+            ReservationStatus::Cancelled => $this->skipStaleCleaningTasks->forCancelledReservation($reservation),
+            default => null,
+        };
     }
 }
