@@ -23,6 +23,7 @@ class UpdateCleaningTaskRequest extends FormRequest
             'estimated_arrival_time' => ['nullable', 'string'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'status' => ['nullable', Rule::enum(CleaningTaskStatus::class)],
+            'planned_date' => ['nullable', 'date'],
         ];
     }
 }

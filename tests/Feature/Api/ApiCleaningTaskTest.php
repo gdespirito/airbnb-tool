@@ -494,6 +494,56 @@ test('cancelling a reservation does not reopen a completed cleaning task', funct
     expect($task->fresh()->status)->toBe(CleaningTaskStatus::Completed);
 });
 
+test('update sets planned_date', function () {
+    $task = CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+    ]);
+
+    $response = $this->patchJson("/api/v1/cleaning-tasks/{$task->id}", [
+        'planned_date' => today()->addDays(4)->toDateString(),
+    ])->assertSuccessful();
+
+    expect($response->json('data.planned_date'))->toBe(today()->addDays(4)->toDateString());
+
+    $task->refresh();
+    expect($task->planned_date->toDateString())->toBe(today()->addDays(4)->toDateString());
+});
+
+test('update clears planned_date with null', function () {
+    $task = CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+        'planned_date' => today()->addDays(3),
+    ]);
+
+    $this->patchJson("/api/v1/cleaning-tasks/{$task->id}", [
+        'planned_date' => null,
+    ])->assertSuccessful();
+
+    expect($task->fresh()->planned_date)->toBeNull();
+});
+
+test('today exposes planned_date when set', function () {
+    CleaningTask::factory()->for($this->property)->create([
+        'scheduled_date' => today(),
+        'planned_date' => today()->addDays(3),
+        'status' => CleaningTaskStatus::Pending,
+    ]);
+
+    $response = $this->getJson('/api/v1/cleaning-tasks/today')->assertSuccessful();
+
+    expect($response->json('data.0.planned_date'))->toBe(today()->addDays(3)->toDateString());
+});
+
+test('store accepts planned_date', function () {
+    $response = $this->postJson('/api/v1/cleaning-tasks', [
+        'property_id' => $this->property->id,
+        'scheduled_date' => today()->toDateString(),
+        'planned_date' => today()->addDays(2)->toDateString(),
+    ])->assertSuccessful();
+
+    expect($response->json('data.planned_date'))->toBe(today()->addDays(2)->toDateString());
+});
+
 test('updating check_in and status together uses the new check_in for skipping', function () {
     $reservation = Reservation::factory()->for($this->property)->create([
         'check_in' => today(),

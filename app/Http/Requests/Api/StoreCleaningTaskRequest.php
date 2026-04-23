@@ -33,6 +33,7 @@ class StoreCleaningTaskRequest extends FormRequest
             'cleaning_type' => ['nullable', Rule::enum(CleaningType::class)],
             'cleaning_fee' => ['nullable', 'integer', 'min:0'],
             'scheduled_date' => ['required', 'date'],
+            'planned_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }

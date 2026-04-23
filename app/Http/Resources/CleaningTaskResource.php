@@ -14,6 +14,7 @@ class CleaningTaskResource extends JsonResource
             'status' => $this->status?->value,
             'cleaning_type' => $this->cleaning_type?->value,
             'scheduled_date' => $this->scheduled_date?->toDateString(),
+            'planned_date' => $this->planned_date?->toDateString(),
             'cleaning_fee' => $this->cleaning_fee,
             'notes' => $this->notes,
             'estimated_arrival_time' => $this->estimated_arrival_time,
