@@ -467,6 +467,33 @@ test('store defaults cleaning_type to checkout when omitted', function () {
     expect($response->json('data.cleaning_type'))->toBe('checkout');
 });
 
+test('cancelling a reservation skips its own cleaning task', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $task = $reservation->cleaningTask;
+    expect($task)->not->toBeNull()
+        ->and($task->status)->toBe(CleaningTaskStatus::Pending);
+
+    $reservation->update(['status' => ReservationStatus::Cancelled]);
+
+    expect($task->fresh()->status)->toBe(CleaningTaskStatus::Skipped);
+});
+
+test('cancelling a reservation does not reopen a completed cleaning task', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'status' => ReservationStatus::Confirmed,
+    ]);
+
+    $task = $reservation->cleaningTask;
+    $task->update(['status' => CleaningTaskStatus::Completed]);
+
+    $reservation->update(['status' => ReservationStatus::Cancelled]);
+
+    expect($task->fresh()->status)->toBe(CleaningTaskStatus::Completed);
+});
+
 test('updating check_in and status together uses the new check_in for skipping', function () {
     $reservation = Reservation::factory()->for($this->property)->create([
         'check_in' => today(),
