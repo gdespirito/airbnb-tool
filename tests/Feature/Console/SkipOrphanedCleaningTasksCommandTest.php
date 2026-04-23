@@ -62,6 +62,32 @@ test('command does not touch tasks of active confirmed reservations', function (
     expect($task->fresh()->status)->toBe(CleaningTaskStatus::Pending);
 });
 
+test('command skips tasks of confirmed reservations with old checkout (Hostex sync lag)', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->subDays(10),
+        'check_out' => now()->subDays(5),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+    $task = $reservation->cleaningTask;
+
+    $this->artisan('cleaning:skip-orphans')->assertSuccessful();
+
+    expect($task->fresh()->status)->toBe(CleaningTaskStatus::Skipped);
+});
+
+test('command keeps tasks of confirmed reservations with recent checkout (grace window)', function () {
+    $reservation = Reservation::factory()->for($this->property)->create([
+        'check_in' => now()->subDays(3),
+        'check_out' => now()->subDay(),
+        'status' => ReservationStatus::Confirmed,
+    ]);
+    $task = $reservation->cleaningTask;
+
+    $this->artisan('cleaning:skip-orphans')->assertSuccessful();
+
+    expect($task->fresh()->status)->toBe(CleaningTaskStatus::Pending);
+});
+
 test('command does not touch tasks when checked-out reservation has no successor', function () {
     $reservation = Reservation::factory()->for($this->property)->create([
         'check_in' => now()->subDays(5),

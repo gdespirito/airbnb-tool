@@ -16,6 +16,12 @@ class SkipOrphanedCleaningTasksCommand extends Command
 
     protected $description = 'Marca skipped las cleaning tasks huérfanas: reservas canceladas o ya checked_out que no fueron skipeadas en su momento.';
 
+    /**
+     * Gracia antes de considerar una reserva "confirmed" con checkout pasado
+     * como huérfana. Cubre lags de sincronización con Hostex.
+     */
+    private const STALE_CONFIRMED_GRACE_DAYS = 2;
+
     public function handle(): int
     {
         $cancelledTaskIds = CleaningTask::query()
@@ -25,11 +31,23 @@ class SkipOrphanedCleaningTasksCommand extends Command
 
         $supersededTaskIds = $this->findSupersededTaskIds();
 
-        $allIds = $cancelledTaskIds->merge($supersededTaskIds)->unique();
+        $staleConfirmedTaskIds = CleaningTask::query()
+            ->active()
+            ->whereHas('reservation', fn ($q) => $q
+                ->where('status', ReservationStatus::Confirmed)
+                ->whereDate('check_out', '<', today()->subDays(self::STALE_CONFIRMED_GRACE_DAYS))
+            )
+            ->pluck('id');
+
+        $allIds = $cancelledTaskIds
+            ->merge($supersededTaskIds)
+            ->merge($staleConfirmedTaskIds)
+            ->unique();
         $total = $allIds->count();
 
         $this->info("Encontradas {$cancelledTaskIds->count()} tasks de reservas canceladas.");
         $this->info("Encontradas {$supersededTaskIds->count()} tasks superadas por estancia posterior.");
+        $this->info("Encontradas {$staleConfirmedTaskIds->count()} tasks de reservas confirmed con checkout anterior a hoy-".self::STALE_CONFIRMED_GRACE_DAYS.' días.');
         $this->info("Total único: {$total}.");
 
         if ($total === 0) {
