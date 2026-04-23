@@ -28,6 +28,8 @@ class CleaningTaskResource extends JsonResource
             'has_same_day_checkin' => $this->when($this->getAttribute('has_same_day_checkin') !== null, $this->getAttribute('has_same_day_checkin')),
             'next_guest_name' => $this->when($this->getAttribute('next_guest_name') !== null, $this->getAttribute('next_guest_name')),
             'checkin_time' => $this->when($this->getAttribute('checkin_time') !== null, $this->getAttribute('checkin_time')),
+            'is_sticky' => $this->when($this->getAttribute('is_sticky') !== null, $this->getAttribute('is_sticky')),
+            'days_overdue' => $this->when($this->getAttribute('days_overdue') !== null, $this->getAttribute('days_overdue')),
         ];
     }
 }

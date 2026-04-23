@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function (): void {
 
     Route::get('cleaning-tasks', [CleaningTaskController::class, 'index']);
     Route::get('cleaning-tasks/today', [CleaningTaskController::class, 'today']);
+    Route::post('cleaning-tasks', [CleaningTaskController::class, 'store']);
     Route::get('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'show']);
     Route::patch('cleaning-tasks/{cleaningTask}', [CleaningTaskController::class, 'update']);
     Route::patch('cleaning-tasks/{cleaningTask}/status', [CleaningTaskController::class, 'updateStatus']);

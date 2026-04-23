@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\CleaningTaskStatus;
+use App\Enums\CleaningType;
 use App\Enums\ReservationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreCleaningTaskPhotoRequest;
+use App\Http\Requests\Api\StoreCleaningTaskRequest;
 use App\Http\Requests\Api\UpdateCleaningTaskRequest;
 use App\Http\Requests\Api\UpdateCleaningTaskStatusRequest;
 use App\Http\Resources\CleaningTaskResource;
@@ -64,13 +66,15 @@ class CleaningTaskController extends Controller
         return CleaningTaskResource::collection($tasks->map(function (CleaningTask $task) {
             $nextReservation = Reservation::query()
                 ->where('property_id', $task->property_id)
-                ->whereDate('check_in', $task->scheduled_date)
+                ->whereDate('check_in', today())
                 ->whereNot('status', ReservationStatus::Cancelled)
                 ->first();
 
             $task->setAttribute('has_same_day_checkin', $nextReservation !== null);
             $task->setAttribute('next_guest_name', $nextReservation?->guest_name);
             $task->setAttribute('checkin_time', $task->property?->checkin_time);
+            $task->setAttribute('is_sticky', $task->scheduled_date->lt(today()));
+            $task->setAttribute('days_overdue', (int) $task->scheduled_date->diffInDays(today(), absolute: false));
 
             return $task;
         }))->additional([
@@ -80,6 +84,18 @@ class CleaningTaskController extends Controller
 
     public function show(CleaningTask $cleaningTask): CleaningTaskResource
     {
+        $cleaningTask->load(['property', 'reservation', 'contact', 'photos']);
+
+        return new CleaningTaskResource($cleaningTask);
+    }
+
+    public function store(StoreCleaningTaskRequest $request): CleaningTaskResource
+    {
+        $data = $request->validated();
+        $data['status'] ??= CleaningTaskStatus::Pending;
+        $data['cleaning_type'] ??= CleaningType::Checkout;
+
+        $cleaningTask = CleaningTask::create($data);
         $cleaningTask->load(['property', 'reservation', 'contact', 'photos']);
 
         return new CleaningTaskResource($cleaningTask);
